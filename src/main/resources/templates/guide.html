@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/app.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/all.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/guide.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/profile.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="theme-dark cheatsheet">
+<div id="app">
+    <div class="guide-cheatsheet">
+        <div class="mt-4 px-0 px-md-3 mb-5">
+            <div class="guide-cheatsheet__synergy" style="overflow-x: auto;display: flex;align-items: center;">
+                <div style="min-width: 1100px;float: left;display: inline-block;width: 33%;">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th v-for="synergy in jobs">
+                                <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
+                                     class="align-middle">
+                                <span class="align-middle">{{synergy.name}}</span><br>
+                                <!--                                <span class="text-gray">2/3/4/5</span>-->
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="affiliation in affiliations">
+                            <th>
+                                <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name" width="14"
+                                     class="align-middle">
+                                <span class="align-middle">{{affiliation.name}}</span><br>
+                                <!--                                <span class="text-gray">2/3/4/5</span>-->
+                            </th>
+                            <td v-for="job in jobs">
+
+                                <div v-for="champion in championsMap[affiliation.name][job.name]" class=""
+                                     v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
+                                     data-toggle="tooltip"
+                                     v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set7/`+champion.championName"
+                                     data-original-title="" title="" v-on:click="addTargets(champion.championId)">
+                                    <img v-bind:src="champion.imageUrl">
+                                    <span class="cost">${{champion.cost}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="max-width: 200px;">
+                    <div v-for="target in targets" class="targets" style="
+    position: relative;
+    display: inline-block;
+    margin-left: 5%;
+
+">
+                        <div class="holding-champions">
+                            <div class="how-many-that">
+                                <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost"
+                                     data-toggle="tooltip"
+                                     v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set7/`+target.championName"
+                                     data-original-title="" title="" style="
+                display: inline-block;
+            ">
+                                    <img v-bind:src="target.imageUrl" alt="스웨인" style="
+    float: left;
+    display: inline-block;
+">
+                                    <span class="cost" style="
+    float: left;
+    display: inline-block;
+">$3</span>
+                                </div>
+                                <input type="number" name="name" min="-1" max="3" required="" placeholder="티어 입력"
+                                       class=" js-bound" style="height: 40px;">
+                            </div>
+
+                        </div>
+                    </div>
+                    <button v-on:click="searchWinners">search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-for="winner in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
+         data-game-id="6032745922">
+
+        <div class="traits">
+            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
+                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/mirage.svg" data-toggle="tooltip" title=""
+                     alt="7 신기루" data-original-title="7 신기루">
+            </div>
+            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
+                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/dragons.svg" data-toggle="tooltip" title=""
+                     alt="1 용" data-original-title="1 용">
+            </div>
+            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
+                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/bard.svg" data-toggle="tooltip" title=""
+                     alt="1 음유시인" data-original-title="1 음유시인">
+            </div>
+            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
+                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/warrior.svg" data-toggle="tooltip" title=""
+                     alt="4 전사" data-original-title="4 전사">
+            </div>
+            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--bronze">
+                <img src="//cdn.lolchess.gg/upload/images/traits/Guild_black_1658472921-guild.svg" data-toggle="tooltip"
+                     title="" alt="1 길드" data-original-title="1 길드">
+            </div>
+        </div>
+
+        <div class="augments">
+            <div class="augment">
+                <img src="//cdn.lolchess.gg/upload/images/items/exiles2.tft_set6.png" data-toggle="tooltip" title=""
+                     alt="추방자 II" data-original-title="추방자 II">
+            </div>
+            <div class="augment">
+                <img src="//cdn.lolchess.gg/upload/images/items/highend3.tft_set6.png" data-toggle="tooltip" title=""
+                     alt="품격있는 쇼핑" data-original-title="품격있는 쇼핑">
+            </div>
+            <div class="augment">
+                <img src="//cdn.lolchess.gg/upload/images/items/second--wind-ii.tft_set6_stage2.png"
+                     data-toggle="tooltip" title="" alt="재생의 바람 II" data-original-title="재생의 바람 II">
+            </div>
+        </div>
+
+        <div class="units">
+            <div class="unit" v-for="unit in winner.units">
+                <img src="//cdn.lolchess.gg/images/tft/stars/cost1_stars2.png"
+                     srcset="//cdn.lolchess.gg/images/tft/stars/cost1_stars2@2x.png 2x" class="stars">
+                <div class="tft-champion cost-1">
+                    <img v-bind:src="championsMapById[unit.characterId].imageUrl" alt="레오나" data-toggle="tooltip"
+                         title="" data-original-title="레오나">
+                </div>
+                <ul class="items">
+                    <img src="//cdn.lolchess.gg/upload/images/items/GiantsBelt_1658368751-1011.png" class="item"
+                         data-toggle="tooltip" data-placement="bottom" title="" data-original-title="거인의 허리띠">
+                    <img src="//cdn.lolchess.gg/upload/images/items/SunfireCape_1640059158.png" class="item"
+                         data-toggle="tooltip" data-placement="bottom" title="" data-original-title="태양불꽃 망토">
+                    <img src="//cdn.lolchess.gg/upload/images/items/3083_C5Y1EvfU08Ug9wCaCJTEp2hNRjh5zSkq9eoY97Uc.png"
+                         class="item" data-toggle="tooltip" data-placement="bottom" title=""
+                         data-original-title="워모그의 갑옷">
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="func">
+            <a href="#" class="toggle-detail">
+                <i class="far fa-chevron-down"></i>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="/js/app.js"></script>
+</html>
