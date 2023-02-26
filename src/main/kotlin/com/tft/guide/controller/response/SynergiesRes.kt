@@ -20,11 +20,12 @@ data class SynergiesRes(
     }
 
     data class SynergyRes(
-            val name: String? = null,
-            val type: SynergyType? = null,
-            val desc: String? = null,
-            val stats: List<String>? = null,
-            val imageUrl: String? = null,
+            val name: String,
+            val type: SynergyType,
+            val desc: String,
+            val stats: List<String>,
+            val imageUrl: String,
+            val dataId: String,
     ) {
         companion object {
             fun listOf(synergies: List<Synergy>): List<SynergyRes> {
@@ -35,6 +36,7 @@ data class SynergiesRes(
                             desc = it.desc,
                             stats = it.stats,
                             imageUrl = it.imageUrl,
+                            dataId = it.dataId,
                     )
                 }
             }

@@ -8,7 +8,6 @@ data class ChampionsResponse(
 
     data class Champion(
             val championName: String? = null,
-            val championId: String? = null,
             val cost: Int? = null,
             val traits: List<String>? = null,
             val attachRange: Int? = null,
@@ -18,6 +17,7 @@ data class ChampionsResponse(
             val initMana: Int? = null,
             val maxMana: Int? = null,
             val imageUrl: String? = null,
+            val dataId: String,
     )
 
     data class PowerByLevelRes(
@@ -46,7 +46,7 @@ data class ChampionsResponse(
                     champions.map { champion ->
                         Champion(
                                 championName = champion.championName,
-                                championId = champion.championId,
+                                dataId = champion.dataId,
                                 cost = champion.cost,
                                 traits = champion.traits.map { it.synergyName },
                                 attachRange = champion.attachRange,

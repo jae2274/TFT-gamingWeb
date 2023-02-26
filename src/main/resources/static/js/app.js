@@ -1,35 +1,56 @@
-
-
-
 let app = new Vue({
     el: '#app',
     data: {
         // synergies:{},
-        champions:[],
-        jobs:[],
-        affiliations:[],
-        championsMap:{},
-        targets:[],
-        championsMapById:{},
+        champions: [],
+        jobs: [],
+        affiliations: [],
+        championsMap: {},
+        targets: [],
+        championsMapById: {},
+        itemsMapById: {},
+        synergiesMapById: {},
+        augmentsMapById: {},
         winners: []
     },
-    async mounted(){
-        const synergies = await getSynergies();
-        let champions = (await getChampions()).champions;
+    async mounted() {
+        const promiseSynergies = getSynergies();
+        const promistChampions = getChampions();
+        const promiseItems = getItems();
+        const promiseAugments = getAugments();
 
-        champions.forEach(champion=>{
-            champion.traits = champion.traits.map(trait=>trait.toLowerCase());
-            this.championsMapById[champion.championId] = champion;
+
+        const synergyRes = (await promiseSynergies);
+        const synergies = [...synergyRes.jobs, ...synergyRes.affiliations]
+        const champions = (await promistChampions).champions;
+        const items = (await promiseItems).items;
+        const augments = (await promiseAugments).augments;
+
+        champions.forEach(champion => {
+            champion.traits = champion.traits.map(trait => trait.toLowerCase());
+            this.championsMapById[champion.dataId] = champion;
         })
 
-        this.jobs = synergies.jobs;
-        this.affiliations = synergies.affiliations;
+        items.forEach(item => {
+            this.itemsMapById[item.dataId] = item;
+        })
 
-        for(const affiliation of this.affiliations){
+        synergies.forEach(synergy => {
+            this.synergiesMapById[synergy.dataId] = synergy;
+        })
+
+        augments.forEach(augment => {
+            this.augmentsMapById[augment.dataId] = augment;
+        })
+
+        this.jobs = synergyRes.jobs;
+        this.affiliations = synergyRes.affiliations;
+
+        for (const affiliation of this.affiliations) {
             this.championsMap[affiliation.name] = {};
-            for(const job of this.jobs){
+            for (const job of this.jobs) {
                 this.championsMap[affiliation.name][job.name] =
-                    champions.filter(champion=>
+                    champions.filter(champion =>
                         champion.traits.includes(affiliation.name) && champion.traits.includes(job.name)
                     );
                 // for(const champion of this.championsMap[affiliation.name][job.name])
@@ -40,13 +61,13 @@ let app = new Vue({
 
         this.championsMap;
     },
-    methods:{
-        addTargets:function (championId){
-            console.log(championId);
-            if(!this.targets.map(target=>target.championId).includes(championId))
-                this.targets = [...this.targets, this.championsMapById[championId]];
+    methods: {
+        addChampions: function (dataId) {
+            console.log(dataId);
+            if (!this.targets.map(target => target.dataId).includes(dataId))
+                this.targets = [...this.targets, this.championsMapById[dataId]];
         },
-        async searchWinners(){
+        async searchWinners() {
             const winnersRes = await callSearchWinners(this.targets);
             this.winners = winnersRes.winners;
 
@@ -55,24 +76,40 @@ let app = new Vue({
     }
 })
 
-async function getSynergies(){
-    let response = await fetch("http://localhost:8080/synergies");
+async function getSynergies() {
+    let response = await fetch("http://localhost:8080/synergies?season=8");
     let json = response.json();
 
     return json;
 }
 
-async function getChampions(){
-    let response = await fetch("http://localhost:8080/champions");
+async function getChampions() {
+    let response = await fetch("http://localhost:8080/champions?season=8");
     let json = response.json();
 
     return json;
 }
 
-async function callSearchWinners(targets){
-    let request = {"units":[]};
-    request.units = targets.map(target=>{return {"characterId":target.championId} });
-    let response = await fetch("http://localhost:8080/winners" , {
+async function getItems() {
+    let response = await fetch("http://localhost:8080/items?season=8");
+    let json = response.json();
+
+    return json;
+}
+
+async function getAugments() {
+    let response = await fetch("http://localhost:8080/augments?season=8");
+    let json = response.json();
+
+    return json;
+}
+
+async function callSearchWinners(targets) {
+    let request = {"units": []};
+    request.units = targets.map(target => {
+        return {"characterId": target.dataId}
+    });
+    let response = await fetch("http://localhost:8080/winners", {
         method: 'POST', // *GET, POST, PUT, DELETE 등
         headers: {
             'Content-Type': 'application/json',

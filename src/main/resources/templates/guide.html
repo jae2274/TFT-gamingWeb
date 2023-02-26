@@ -42,7 +42,7 @@
                                      v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
                                      data-toggle="tooltip"
                                      v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set7/`+champion.championName"
-                                     data-original-title="" title="" v-on:click="addTargets(champion.championId)">
+                                     data-original-title="" title="" v-on:click="addChampions(champion.dataId)">
                                     <img v-bind:src="champion.imageUrl">
                                     <span class="cost">${{champion.cost}}</span>
                                 </div>
@@ -89,60 +89,39 @@
     <div v-for="winner in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
          data-game-id="6032745922">
 
-        <div class="traits">
-            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
-                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/mirage.svg" data-toggle="tooltip" title=""
+        <div class="traits" v-for="trait in winner.traits" :set="synergy = synergiesMapById[trait.name]"
+             style="width: 48px;">
+            <div style="background-color: grey">
+                <img v-bind:src="synergy.imageUrl" data-toggle="tooltip" title="" style="width:48px;"
                      alt="7 신기루" data-original-title="7 신기루">
-            </div>
-            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
-                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/dragons.svg" data-toggle="tooltip" title=""
-                     alt="1 용" data-original-title="1 용">
-            </div>
-            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
-                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/bard.svg" data-toggle="tooltip" title=""
-                     alt="1 음유시인" data-original-title="1 음유시인">
-            </div>
-            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--gold">
-                <img src="//cdn.lolchess.gg/images/tft/traiticons-black/7.0/warrior.svg" data-toggle="tooltip" title=""
-                     alt="4 전사" data-original-title="4 전사">
-            </div>
-            <div class="tft-hexagon-image tft-hexagon-image--black tft-hexagon-image--24 tft-hexagon-image--bronze">
-                <img src="//cdn.lolchess.gg/upload/images/traits/Guild_black_1658472921-guild.svg" data-toggle="tooltip"
-                     title="" alt="1 길드" data-original-title="1 길드">
             </div>
         </div>
 
         <div class="augments">
-            <div class="augment">
-                <img src="//cdn.lolchess.gg/upload/images/items/exiles2.tft_set6.png" data-toggle="tooltip" title=""
-                     alt="추방자 II" data-original-title="추방자 II">
-            </div>
-            <div class="augment">
-                <img src="//cdn.lolchess.gg/upload/images/items/highend3.tft_set6.png" data-toggle="tooltip" title=""
-                     alt="품격있는 쇼핑" data-original-title="품격있는 쇼핑">
-            </div>
-            <div class="augment">
-                <img src="//cdn.lolchess.gg/upload/images/items/second--wind-ii.tft_set6_stage2.png"
-                     data-toggle="tooltip" title="" alt="재생의 바람 II" data-original-title="재생의 바람 II">
+            <div class="augment" v-for="augment in winner.augments" :set="aug = augmentsMapById[augment]">
+                <img v-bind:src="aug.imageUrl" data-toggle="tooltip" title=""
+                     alt="추방자 II" data-original-title="추방자 II" style="width:24px;height:24px;">
             </div>
         </div>
 
-        <div class="units">
-            <div class="unit" v-for="unit in winner.units">
-                <img src="//cdn.lolchess.gg/images/tft/stars/cost1_stars2.png"
-                     srcset="//cdn.lolchess.gg/images/tft/stars/cost1_stars2@2x.png 2x" class="stars">
-                <div class="tft-champion cost-1">
-                    <img v-bind:src="championsMapById[unit.characterId].imageUrl" alt="레오나" data-toggle="tooltip"
-                         title="" data-original-title="레오나">
+        <div class="units" style="width:900px;">
+            <div class="unit" v-for="unit in winner.units" :set="champion = championsMapById[unit.characterId]"
+                 style="width: 90px;height: 100px;">
+                <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championsMapById[unit.characterId].cost}_stars${unit.tier}.png` "
+                     class="stars">
+                <div class="cost-1">
+                    <img v-bind:src="champion.imageUrl"
+                         v-bind:alt="champion.championName" data-toggle="tooltip"
+                         v-bind:title="champion.championName"
+                         v-bind:data-original-title="champion.championName"
+                         style="width:48px;">
                 </div>
-                <ul class="items">
-                    <img src="//cdn.lolchess.gg/upload/images/items/GiantsBelt_1658368751-1011.png" class="item"
-                         data-toggle="tooltip" data-placement="bottom" title="" data-original-title="거인의 허리띠">
-                    <img src="//cdn.lolchess.gg/upload/images/items/SunfireCape_1640059158.png" class="item"
-                         data-toggle="tooltip" data-placement="bottom" title="" data-original-title="태양불꽃 망토">
-                    <img src="//cdn.lolchess.gg/upload/images/items/3083_C5Y1EvfU08Ug9wCaCJTEp2hNRjh5zSkq9eoY97Uc.png"
-                         class="item" data-toggle="tooltip" data-placement="bottom" title=""
-                         data-original-title="워모그의 갑옷">
+                <ul class="items" style="padding-top: 3px;">
+                    <img v-for="itemName in unit.itemNames"
+                         v-bind:src="itemsMapById[itemName].imageUrl" class="item"
+                         data-toggle="tooltip" data-placement="bottom" v-bind:title="itemsMapById[itemName].itemName"
+                         data-original-title="거인의 허리띠"
+                         style="width:30px;height: 30px;">
                 </ul>
             </div>
         </div>

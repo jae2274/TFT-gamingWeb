@@ -1,24 +1,22 @@
 package com.tft.guide.entity
 
-import com.querydsl.core.annotations.QueryEntity
 import org.springframework.data.mongodb.core.mapping.Document
-import javax.persistence.Entity
 import javax.persistence.Id
 
-@Entity
-@QueryEntity
+
 @Document
 data class Item(
         @Id
-        var _id: String? = null,
-        var itemName: String = "",
-        var itemEngName: String = "",
-        var itemEffect: String = "",
-        var itemSpec: String = "",
-        var imageUrl: String = "",
-        var childItems: List<String> = listOf(),
-        var season: String = "",
-        var itemId: String? = null,
-        var similarity: Double = 0.0,
-        var isFixed: Boolean = false,
-)
+        val _id: String,
+        val itemName: String,
+        val itemEffect: String,
+        val itemSpec: String,
+        val imageUrl: String,
+        val childItems: List<String> = listOf(),
+        val season: String,
+        override val engName: String,
+        val engName2: String,
+        override var dataId: String,
+        override var isFixed: Boolean,
+        override var similarity: Double?,
+) : TFTData
