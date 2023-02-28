@@ -9,123 +9,178 @@
     <link href="/css/all.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/guide.css" rel="stylesheet" type="text/css"/>
     <link href="/css/profile.css" rel="stylesheet" type="text/css"/>
+    <style type="text/css">
+        .search-champion:hover {
+            filter: blur(3px);
+        }
+
+        .search-item:hover {
+            filter: blur(3px);
+        }
+
+        .item:hover {
+            background-color: skyblue;
+            font-weight: bold;
+        }
+
+        .tft-item {
+            height: 40px;
+            width: 40px;
+        }
+    </style>
 </head>
 <body class="theme-dark cheatsheet">
 <div id="app">
     <div class="guide-cheatsheet">
         <div class="mt-4 px-0 px-md-3 mb-5">
-            <div class="guide-cheatsheet__synergy" style="overflow-x: auto;display: flex;align-items: center;">
-                <div style="min-width: 1100px;float: left;display: inline-block;width: 33%;">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th v-for="synergy in jobs">
-                                <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
-                                     class="align-middle">
-                                <span class="align-middle">{{synergy.name}}</span><br>
-                                <!--                                <span class="text-gray">2/3/4/5</span>-->
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="affiliation in affiliations">
-                            <th>
-                                <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name" width="14"
-                                     class="align-middle">
-                                <span class="align-middle">{{affiliation.name}}</span><br>
-                                <!--                                <span class="text-gray">2/3/4/5</span>-->
-                            </th>
-                            <td v-for="job in jobs">
+            <div style="display: flex;">
+                <div style="display: inline-grid;">
+                    <div class="items"
+                         style="width: 500px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
+                        <div class="item" v-for="item in filteredItems" style="height: 30px;"
+                             v-on:click="addItems(item.dataId)">
+                            <img v-bind:src="item.imageUrl" style="height: 100%;">
 
-                                <div v-for="champion in championsMap[affiliation.name][job.name]" class=""
-                                     v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
-                                     data-toggle="tooltip"
-                                     v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set7/`+champion.championName"
-                                     data-original-title="" title="" v-on:click="addChampions(champion.dataId)">
-                                    <img v-bind:src="champion.imageUrl">
-                                    <span class="cost">${{champion.cost}}</span>
+                            {{item.itemName}}
+                            <div style="height: 100%;float: right;display: flex;width: 22%;">
+                                <div style="height: 100%;" v-for="childItemName in item.childItems"
+                                     :set="childItem = itemsMapByName[childItemName]">
+                                    <img v-bind:src="childItem?childItem.imageUrl:'/image/question-mark.jpg'"
+                                         style="height: 100%;">
                                 </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="max-width: 200px;">
-                    <div v-for="target in targets" class="targets" style="
-    position: relative;
-    display: inline-block;
-    margin-left: 5%;
-
-">
-                        <div class="holding-champions">
-                            <div class="how-many-that">
-                                <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost"
-                                     data-toggle="tooltip"
-                                     v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set7/`+target.championName"
-                                     data-original-title="" title="" style="
-                display: inline-block;
-            ">
-                                    <img v-bind:src="target.imageUrl" alt="스웨인" style="
-    float: left;
-    display: inline-block;
-">
-                                    <span class="cost" style="
-    float: left;
-    display: inline-block;
-">$3</span>
-                                </div>
-                                <input type="number" name="name" min="-1" max="3" required="" placeholder="티어 입력"
-                                       class=" js-bound" style="height: 40px;">
                             </div>
-
                         </div>
                     </div>
-                    <button v-on:click="searchWinners">search</button>
+                    <div><input type="text" v-model="itemKeyword" v-on:keydown.enter="filterItems"></div>
+                    <div style="height: 40px;">
+                        <div v-for="(target,index) in itemsForSearch" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost"
+                                 data-toggle="tooltip"
+                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/item/set${target.season}/`+target.itemName"
+                                 data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="removeItem(index)">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;" v-on:click="removeItem">
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="guide-cheatsheet__synergy"
+                     style="overflow-x: auto;display: flex;align-items: center;display: inline-grid;">
+                    <div style="min-width: 1100px;float: left;display: inline-block;width: 33%;">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th v-for="synergy in jobs">
+                                    <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
+                                         class="align-middle">
+                                    <span class="align-middle">{{synergy.name}}</span><br>
+                                    <!--                                <span class="text-gray">2/3/4/5</span>-->
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="affiliation in affiliations">
+                                <th>
+                                    <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name" width="14"
+                                         class="align-middle">
+                                    <span class="align-middle">{{affiliation.name}}</span><br>
+                                    <!--                                <span class="text-gray">2/3/4/5</span>-->
+                                </th>
+                                <td v-for="job in jobs">
+
+                                    <div v-for="champion in championsMap[affiliation.name][job.name]"
+                                         v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
+                                         data-toggle="tooltip"
+                                         v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${champion.season}/`+champion.engName"
+                                         v-on:click="addChampions(champion.dataId)">
+                                        <img v-bind:src="champion.imageUrl">
+                                        <span class="cost">${{champion.cost}}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <div v-for="(target,index) in championsForSearch" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div class="holding-champions">
+                                <div class="how-many-that">
+                                    <div v-bind:class="`search-champion tft-champion tft-champion--42 cost-`+target.cost"
+                                         data-toggle="tooltip"
+                                         v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${target.season}/`+target.championName"
+                                         data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="removeChampion(index)">
+                                        <img v-bind:src="target.imageUrl" alt="스웨인"
+                                             style="float: left;display:inline-block;">
+                                        <span class="cost"
+                                              style="float:left;display:inline-block;">${{target.cost}}</span>
+                                    </div>
+                                    <input type="number" name="name" min="1" max="3" v-model:value="target.tier"
+                                           required=""
+                                           placeholder="티어 입력"
+                                           class=" js-bound" style="height: 40px;">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button v-on:click="searchWinners">search</button>
             </div>
         </div>
     </div>
     <div v-for="winner in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
-         data-game-id="6032745922">
+         data-game-id="6032745922" style="display: inline-block">
 
-        <div class="traits" v-for="trait in winner.traits" :set="synergy = synergiesMapById[trait.name]"
-             style="width: 48px;">
-            <div style="background-color: grey">
+        <div class="traits" style="width: 765px;display: flex;">
+            <div style="background-color: grey;width: auto;margin:5px; "
+                 v-for="trait in winner.traits.filter(value => value.tierCurrent!=0).sort((a, b) =>b.tierCurrent-a.tierCurrent )"
+                 :set="synergy = synergiesMapById[trait.name]">
                 <img v-bind:src="synergy.imageUrl" data-toggle="tooltip" title="" style="width:48px;"
-                     alt="7 신기루" data-original-title="7 신기루">
+                     v-bind:data-original-title="`${synergy.name} ${trait.tierCurrent}`">
             </div>
         </div>
-
-        <div class="augments">
-            <div class="augment" v-for="augment in winner.augments" :set="aug = augmentsMapById[augment]">
-                <img v-bind:src="aug.imageUrl" data-toggle="tooltip" title=""
-                     alt="추방자 II" data-original-title="추방자 II" style="width:24px;height:24px;">
-            </div>
-        </div>
-
-        <div class="units" style="width:900px;">
-            <div class="unit" v-for="unit in winner.units" :set="champion = championsMapById[unit.characterId]"
-                 style="width: 90px;height: 100px;">
-                <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championsMapById[unit.characterId].cost}_stars${unit.tier}.png` "
-                     class="stars">
-                <div class="cost-1">
-                    <img v-bind:src="champion.imageUrl"
-                         v-bind:alt="champion.championName" data-toggle="tooltip"
-                         v-bind:title="champion.championName"
-                         v-bind:data-original-title="champion.championName"
-                         style="width:48px;">
+        <div style="display: flex;">
+            <div class="augments" style="padding-left: 10px;padding-top: 17px;">
+                <div class="augment" v-for="augment in winner.augments" :set="aug = augmentsMapById[augment]"
+                     data-toggle="tooltip" data-placement="top">
+                    <img v-bind:src="aug?aug.imageUrl:'/image/question-mark.jpg'" data-toggle="tooltip"
+                         v-bind:data-original-title="aug?aug.name:''" style="width:24px;height:24px;">
                 </div>
-                <ul class="items" style="padding-top: 3px;">
-                    <img v-for="itemName in unit.itemNames"
-                         v-bind:src="itemsMapById[itemName].imageUrl" class="item"
-                         data-toggle="tooltip" data-placement="bottom" v-bind:title="itemsMapById[itemName].itemName"
-                         data-original-title="거인의 허리띠"
-                         style="width:30px;height: 30px;">
-                </ul>
+            </div>
+
+            <div class="units" style="width:900px;">
+                <div class="unit" v-for="unit in winner.units" :set="champion = championsMapById[unit.characterId]"
+                     style="width: 90px;height: 100px;">
+                    <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championsMapById[unit.characterId].cost}_stars${unit.tier}.png` "
+                         class="stars">
+                    <div class="cost-1">
+                        <img v-bind:src="champion.imageUrl"
+                             v-bind:alt="champion.championName" data-toggle="tooltip"
+                             v-bind:title="champion.championName"
+                             v-bind:data-original-title="champion.championName"
+                             style="width:48px;">
+                    </div>
+                    <ul class="items" style="padding-top: 3px;">
+                        <img v-for="itemName in unit.itemNames" :set="item = itemsMapById[itemName]"
+                             v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
+                             data-toggle="tooltip" data-placement="bottom"
+                             v-bind:title="item?item.itemName:''"
+                             style="width:30px;height: 30px;">
+                    </ul>
+                </div>
             </div>
         </div>
-
 
         <div class="func">
             <a href="#" class="toggle-detail">
@@ -135,6 +190,9 @@
     </div>
 </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="/js/app.js"></script>

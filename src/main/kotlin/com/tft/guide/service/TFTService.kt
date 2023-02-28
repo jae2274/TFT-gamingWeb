@@ -9,15 +9,13 @@ import com.tft.guide.entity.Synergy
 import com.tft.guide.repository.*
 //import com.tft.guide.repository.QueryRepository
 import org.springframework.stereotype.Service
-import java.util.function.Function
-import java.util.stream.Collectors
 
 @Service
 class TFTService(
 
         private val synergyRepository: SynergyRepository,
         private val championRepository: ChampionRepository,
-        private val deckRepository: DeckRepository,
+        private val deckQueryRepository: DeckQueryRepository,
         private val itemRepository: ItemRepository,
         private val augmentRepository: AugmentRepository,
 //        private val queryRepository: QueryRepository,
@@ -33,7 +31,7 @@ class TFTService(
     }
 
     fun winners(winnersRequest: WinnersRequest): WinnersResponse {
-        val decks: List<Deck> = deckRepository.findByCharacterId(winnersRequest.units.map { unit -> unit.characterId })
+        val decks: List<Deck> = deckQueryRepository.findByCharacterId(1, winnersRequest)
         return WinnersResponse.of(decks)
     }
 

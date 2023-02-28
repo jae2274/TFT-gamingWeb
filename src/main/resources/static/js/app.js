@@ -4,11 +4,16 @@ let app = new Vue({
         // synergies:{},
         champions: [],
         jobs: [],
+        itemKeyword: '',
         affiliations: [],
         championsMap: {},
-        targets: [],
+        championsForSearch: [],
+        itemsForSearch: [],
+        filteredItems: [],
         championsMapById: {},
+        items: [],
         itemsMapById: {},
+        itemsMapByName: {},
         synergiesMapById: {},
         augmentsMapById: {},
         winners: []
@@ -23,16 +28,21 @@ let app = new Vue({
         const synergyRes = (await promiseSynergies);
         const synergies = [...synergyRes.jobs, ...synergyRes.affiliations]
         const champions = (await promistChampions).champions;
-        const items = (await promiseItems).items;
+        this.items = (await promiseItems).items;
+
         const augments = (await promiseAugments).augments;
 
         champions.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
             this.championsMapById[champion.dataId] = champion;
         })
-
-        items.forEach(item => {
+        this.filteredItems = this.items;
+        this.items.forEach(item => {
             this.itemsMapById[item.dataId] = item;
+        })
+
+        this.items.forEach(item => {
+            this.itemsMapByName[item.itemName] = item;
         })
 
         synergies.forEach(synergy => {
@@ -52,7 +62,11 @@ let app = new Vue({
                 this.championsMap[affiliation.name][job.name] =
                     champions.filter(champion =>
                         champion.traits.includes(affiliation.name) && champion.traits.includes(job.name)
-                    );
+                    )
+                        .map(value => {
+                            value.tier = 1;
+                            return value
+                        });
                 // for(const champion of this.championsMap[affiliation.name][job.name])
                 //     champion.cost = champion.cost>5?champion.cost/2:champion.cost
 
@@ -61,17 +75,34 @@ let app = new Vue({
 
         this.championsMap;
     },
+    updated() {
+        $('[data-toggle="tooltip"]').tooltip();
+    },
     methods: {
         addChampions: function (dataId) {
             console.log(dataId);
-            if (!this.targets.map(target => target.dataId).includes(dataId))
-                this.targets = [...this.targets, this.championsMapById[dataId]];
+            if (!this.championsForSearch.map(target => target.dataId).includes(dataId))
+                this.championsForSearch = [...this.championsForSearch, this.championsMapById[dataId]];
+        },
+        addItems: function (dataId) {
+            console.log(dataId);
+            if (!this.itemsForSearch.map(target => target.dataId).includes(dataId))
+                this.itemsForSearch = [...this.itemsForSearch, this.itemsMapById[dataId]];
+        },
+        removeChampion(index) {
+
+            this.championsForSearch = [...this.championsForSearch.slice(0, index), ...this.championsForSearch.slice(index + 1, this.championsForSearch.length)]
+        },
+        removeItem(index) {
+
+            this.itemsForSearch = [...this.itemsForSearch.slice(0, index), ...this.itemsForSearch.slice(index + 1, this.itemsForSearch.length)]
+        },
+        filterItems() {
+            this.filteredItems = this.items.filter(value => value.itemName.includes(this.itemKeyword))
         },
         async searchWinners() {
-            const winnersRes = await callSearchWinners(this.targets);
+            const winnersRes = await callSearchWinners(this.championsForSearch, this.itemsForSearch);
             this.winners = winnersRes.winners;
-
-
         }
     }
 })
@@ -104,11 +135,15 @@ async function getAugments() {
     return json;
 }
 
-async function callSearchWinners(targets) {
-    let request = {"units": []};
-    request.units = targets.map(target => {
-        return {"characterId": target.dataId}
-    });
+async function callSearchWinners(champions, items) {
+    let request = {
+        champions: champions.map(target => {
+            return {dataId: target.dataId, tier: target.tier}
+        }),
+        items: items.map(target => {
+            return {dataId: target.dataId}
+        })
+    };
     let response = await fetch("http://localhost:8080/winners", {
         method: 'POST', // *GET, POST, PUT, DELETE 등
         headers: {

@@ -7,17 +7,19 @@ data class ChampionsResponse(
 ) {
 
     data class Champion(
-            val championName: String? = null,
-            val cost: Int? = null,
-            val traits: List<String>? = null,
-            val attachRange: Int? = null,
-            val skillName: String? = null,
-            val skillExplanation: String? = null,
-            val powerByLevel: List<Map<Int, PowerByLevelRes>>? = null,
-            val initMana: Int? = null,
-            val maxMana: Int? = null,
-            val imageUrl: String? = null,
+            val championName: String,
+            val engName: String,
+            val cost: Int,
+            val traits: List<String>,
+            val attachRange: Int,
+            val skillName: String,
+            val skillExplanation: String,
+            val powerByLevel: List<Map<Int, PowerByLevelRes>>,
+            val initMana: Int,
+            val maxMana: Int,
+            val imageUrl: String,
             val dataId: String,
+            val season: String,
     )
 
     data class PowerByLevelRes(
@@ -46,6 +48,7 @@ data class ChampionsResponse(
                     champions.map { champion ->
                         Champion(
                                 championName = champion.championName,
+                                engName = champion.engName,
                                 dataId = champion.dataId,
                                 cost = champion.cost,
                                 traits = champion.traits.map { it.synergyName },
@@ -56,6 +59,7 @@ data class ChampionsResponse(
                                 initMana = champion.initMana,
                                 maxMana = champion.maxMana,
                                 imageUrl = champion.imageUrl,
+                                season = champion.season
                         )
                     }
             )

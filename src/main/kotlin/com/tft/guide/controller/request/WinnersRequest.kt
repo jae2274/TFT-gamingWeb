@@ -1,9 +1,16 @@
 package com.tft.guide.controller.request
 
+
 data class WinnersRequest(
-        val units: List<Unit>
+        val champions: List<ChampionReq>,
+        val items: List<ItemReq>,
 ) {
-    data class Unit(
-            val characterId: String
+    data class ChampionReq(
+            val dataId: String,
+            val tier: Int,
+    )
+
+    data class ItemReq(
+            val dataId: String,
     )
 }
