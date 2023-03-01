@@ -194,7 +194,6 @@ replay_pid*
 
 mongoData/
 
-src/main/resources/application-*
-src/test/resources/application-*
+application-aws.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,kotlin
