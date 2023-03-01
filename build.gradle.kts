@@ -85,12 +85,13 @@ dependencyManagement {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }
+tasks.withType<Jar> { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=all")
-        jvmTarget = "16"
+        jvmTarget = "18"
     }
 }
 

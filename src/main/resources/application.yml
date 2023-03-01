@@ -7,11 +7,6 @@ spring:
     prefix: classpath:templates/
     suffix: .html
     cache: false
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: tft_service
   devtools:
     restart:
       enabled: false
