@@ -5,18 +5,22 @@ let app = new Vue({
         champions: [],
         jobs: [],
         itemKeyword: '',
+        championKeyword: '',
         affiliations: [],
         championsMap: {},
         championsForSearch: [],
+        filteredChampions: [],
         itemsForSearch: [],
         filteredItems: [],
         championsMapById: {},
         items: [],
+        champions: [],
         itemsMapById: {},
         itemsMapByName: {},
         synergiesMapById: {},
         augmentsMapById: {},
-        winners: []
+        winners: [],
+        replaceMatchIds: new Set(),
     },
     async mounted() {
         const promiseSynergies = getSynergies();
@@ -31,7 +35,7 @@ let app = new Vue({
         this.items = (await promiseItems).items;
 
         const augments = (await promiseAugments).augments;
-
+        this.champions = champions;
         champions.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
             this.championsMapById[champion.dataId] = champion;
@@ -83,6 +87,7 @@ let app = new Vue({
             console.log(dataId);
             if (!this.championsForSearch.map(target => target.dataId).includes(dataId))
                 this.championsForSearch = [...this.championsForSearch, this.championsMapById[dataId]];
+            this.championsForSearch = this.championsForSearch.sort((prev, next) => prev.cost - next.cost);
         },
         addItems: function (dataId) {
             console.log(dataId);
@@ -94,57 +99,70 @@ let app = new Vue({
             this.championsForSearch = [...this.championsForSearch.slice(0, index), ...this.championsForSearch.slice(index + 1, this.championsForSearch.length)]
         },
         removeItem(index) {
-
             this.itemsForSearch = [...this.itemsForSearch.slice(0, index), ...this.itemsForSearch.slice(index + 1, this.itemsForSearch.length)]
         },
         filterItems() {
             this.filteredItems = this.items.filter(value => value.itemName.includes(this.itemKeyword))
         },
+        filterChampions() {
+            this.filteredChampions = this.champions.filter(value => value.championName.includes(this.championKeyword))
+        },
         async searchWinners() {
             const winnersRes = await callSearchWinners(this.championsForSearch, this.itemsForSearch);
             this.winners = winnersRes.winners;
+            this.replaceMatchIdSet = new Set();
+        },
+        async replaceWinner(index) {
+            this.winners.map(value => value.match_id).forEach(value => this.replaceMatchIdSet.add(value))
+
+            const response = await callSearchWinners(this.championsForSearch, this.itemsForSearch, this.replaceMatchIdSet)
+            this.winners = [...this.winners.slice(0, index), ...this.winners.slice(index + 1, this.winners.length), ...response.winners]
         }
     }
 })
 
 async function getSynergies() {
-    let response = await fetch("http://localhost:8080/synergies?season=8");
+    let response = await fetch("/synergies?season=8");
     let json = response.json();
 
     return json;
 }
 
 async function getChampions() {
-    let response = await fetch("http://localhost:8080/champions?season=8");
+    let response = await fetch("/champions?season=8");
     let json = response.json();
 
     return json;
 }
 
 async function getItems() {
-    let response = await fetch("http://localhost:8080/items?season=8");
+    let response = await fetch("/items?season=8");
     let json = response.json();
 
     return json;
 }
 
 async function getAugments() {
-    let response = await fetch("http://localhost:8080/augments?season=8");
+    let response = await fetch("/augments?season=8");
     let json = response.json();
 
     return json;
 }
 
-async function callSearchWinners(champions, items) {
+async function callSearchWinners(champions, items, replaceMatchIdSet) {
     let request = {
         champions: champions.map(target => {
             return {dataId: target.dataId, tier: target.tier}
         }),
         items: items.map(target => {
             return {dataId: target.dataId}
-        })
+        }),
     };
-    let response = await fetch("http://localhost:8080/winners", {
+
+    if (replaceMatchIdSet)
+        request.replaceMatchIds = Array.from(replaceMatchIdSet);
+
+    let response = await fetch("/winners", {
         method: 'POST', // *GET, POST, PUT, DELETE 등
         headers: {
             'Content-Type': 'application/json',

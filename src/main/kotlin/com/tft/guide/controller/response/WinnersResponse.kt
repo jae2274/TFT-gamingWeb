@@ -8,6 +8,7 @@ data class WinnersResponse(
 ) {
     data class WinnerRes(
             val gameVersion: String? = null,
+            val match_id: String,
             val goldLeft: Int? = null,
             val lastRound: Int? = null,
             val level: Int? = null,
@@ -75,7 +76,7 @@ data class WinnersResponse(
                     decks
                             .map {
                                 WinnerRes(
-//                                        gameVersion = it.info.tft_set_core_name,
+                                        match_id = it.match_id,
                                         lastRound = it.last_round,
                                         level = it.level,
                                         placement = it.placement,

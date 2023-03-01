@@ -27,7 +27,7 @@ data class Deck(
             var game_datetime: Long? = null,
             var game_length: Float? = null,
             var queue_id: Int? = null,
-            var tft_game_type: String? = null,
+            var tft_game_type: GameType? = null,
             var tft_set_core_name: String? = null,
             var tft_set_number: Int? = null,
     )

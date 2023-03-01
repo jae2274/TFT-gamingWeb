@@ -105,7 +105,20 @@
                             </tbody>
                         </table>
                     </div>
-
+                    <div><input type="text" v-model="championKeyword" v-on:keydown.enter="filterChampions">
+                        <div v-for="(target,index) in filteredChampions" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost"
+                                 data-toggle="tooltip"
+                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${target.season}/`+target.championName"
+                                 data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="addChampions(target.dataId)">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <div v-for="(target,index) in championsForSearch" class="targets"
                              style="position: relative;display: inline-block;">
@@ -139,7 +152,7 @@
             </div>
         </div>
     </div>
-    <div v-for="winner in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
+    <div v-for="(winner, index) in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
          data-game-id="6032745922" style="display: inline-block">
 
         <div class="traits" style="width: 765px;display: flex;">
@@ -169,7 +182,8 @@
                              v-bind:alt="champion.championName" data-toggle="tooltip"
                              v-bind:title="champion.championName"
                              v-bind:data-original-title="champion.championName"
-                             style="width:48px;">
+                             style="width:48px;"
+                             v-on:click="addChampions(championsMapById[unit.characterId].dataId)">
                     </div>
                     <ul class="items" style="padding-top: 3px;">
                         <img v-for="itemName in unit.itemNames" :set="item = itemsMapById[itemName]"
@@ -182,10 +196,8 @@
             </div>
         </div>
 
-        <div class="func">
-            <a href="#" class="toggle-detail">
-                <i class="far fa-chevron-down"></i>
-            </a>
+        <div v-on:click="replaceWinner(index)"
+             style="height:100%;width:60px;background-color:sandybrown;position:absolute;top:0;right:0;cursor: pointer;">
         </div>
     </div>
 </div>
