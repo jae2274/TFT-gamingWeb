@@ -16,7 +16,7 @@ data class AugmentsRes(
 
     data class AugmentRes(
             val season: String,
-            val augmentName: String,
+            val name: String,
             val tier: Int,
             val tierName: String,
             val desc: String,
@@ -29,7 +29,7 @@ data class AugmentsRes(
                 return augments.map {
                     AugmentRes(
                             season = it.season,
-                            augmentName = it.name,
+                            name = it.name,
                             tier = it.tier,
                             tierName = it.tierName,
                             desc = it.desc,

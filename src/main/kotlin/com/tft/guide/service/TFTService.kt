@@ -25,14 +25,14 @@ class TFTService(
         return SynergiesRes.of(synergies)
     }
 
-    fun champions(season: String): ChampionsResponse {
+    fun champions(season: String): ChampionsRes {
         val champions: List<Champion> = championRepository.findAllBySeason(season)
-        return ChampionsResponse.of(champions)
+        return ChampionsRes.of(champions)
     }
 
-    fun winners(winnersRequest: WinnersRequest): WinnersResponse {
+    fun winners(winnersRequest: WinnersRequest): WinnersRes {
         val decks: List<Deck> = deckQueryRepository.findByCharacterId(1, winnersRequest)
-        return WinnersResponse.of(decks)
+        return WinnersRes.of(decks)
     }
 
     fun items(season: String): ItemsRes {

@@ -1,37 +1,45 @@
 let app = new Vue({
     el: '#app',
     data: {
-        augments: [],
-        champions: [],
-        jobs: [],
-        itemKeyword: '',
-        championKeyword: '',
-        augmentKeyword: '',
-        affiliations: [],
-        championsMap: {},
-        championsForSearch: [],
-        itemsForSearch: [],
-        augmentsForSearch: [],
-        championsMapById: {},
-        items: [],
-        champions: [],
-        itemsMapById: {},
-        itemsMapByName: {},
+        augmentObj: {
+            list: [],
+            searchWord: '',
+            requests: [],
+            mapById: {},
+        },
+        itemObj: {
+            list: [],
+            searchWord: '',
+            requests: [],
+            mapById: {},
+            mapByName: {},
+
+        },
+        championObj: {
+            list: [],
+            searchWord: '',
+            mapBySynergies: {},
+            requests: [],
+            mapById: {},
+        },
+        synergyObj: {
+            jobs: [],
+            affiliations: [],
+        },
         synergiesMapById: {},
-        augmentsMapById: {},
         winners: [],
         currentOffset: 0,
     },
     computed: {
+        filteredAugments() {
+            return this.augmentObj.searchWord ? this.augmentObj.list.filter(value => value.name.includes(this.augmentObj.searchWord)) : [];
+        },
         filteredItems() {
-            return this.itemKeyword ? this.items.filter(value => value.itemName.includes(this.itemKeyword)) : [];
+            return this.itemObj.searchWord ? this.itemObj.list.filter(value => value.name.includes(this.itemObj.searchWord)) : [];
         },
         filteredChampions() {
-            return this.championKeyword ? this.champions.filter(value => value.championName.includes(this.championKeyword)) : [];
+            return this.championObj.searchWord ? this.championObj.list.filter(value => value.name.includes(this.championObj.searchWord)) : [];
         },
-        filteredAugments() {
-            return this.augmentKeyword ? this.augments.filter(value => value.augmentName.includes(this.augmentKeyword)) : [];
-        }
     },
     async mounted() {
         const promiseSynergies = getSynergies();
@@ -42,39 +50,39 @@ let app = new Vue({
 
         const synergyRes = (await promiseSynergies);
         const synergies = [...synergyRes.jobs, ...synergyRes.affiliations]
-        this.champions = (await promistChampions).champions;
-        this.items = (await promiseItems).items;
+        this.championObj.list = (await promistChampions).champions;
+        this.itemObj.list = (await promiseItems).items;
 
-        this.augments = (await promiseAugments).augments;
+        this.augmentObj.list = (await promiseAugments).augments;
 
-        this.champions.forEach(champion => {
+        this.championObj.list.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
-            this.championsMapById[champion.dataId] = champion;
+            this.championObj.mapById[champion.dataId] = champion;
         })
-        this.items.forEach(item => {
-            this.itemsMapById[item.dataId] = item;
+        this.itemObj.list.forEach(item => {
+            this.itemObj.mapById[item.dataId] = item;
         })
 
-        this.items.forEach(item => {
-            this.itemsMapByName[item.itemName] = item;
+        this.itemObj.list.forEach(item => {
+            this.itemObj.mapByName[item.name] = item;
         })
 
         synergies.forEach(synergy => {
             this.synergiesMapById[synergy.dataId] = synergy;
         })
 
-        this.augments.forEach(augment => {
-            this.augmentsMapById[augment.dataId] = augment;
+        this.augmentObj.list.forEach(augment => {
+            this.augmentObj.mapById[augment.dataId] = augment;
         })
 
-        this.jobs = synergyRes.jobs;
-        this.affiliations = synergyRes.affiliations;
+        this.synergyObj.jobs = synergyRes.jobs;
+        this.synergyObj.affiliations = synergyRes.affiliations;
 
-        for (const affiliation of this.affiliations) {
-            this.championsMap[affiliation.name] = {};
-            for (const job of this.jobs) {
-                this.championsMap[affiliation.name][job.name] =
-                    this.champions.filter(champion =>
+        for (const affiliation of this.synergyObj.affiliations) {
+            this.championObj.mapBySynergies[affiliation.name] = {};
+            for (const job of this.synergyObj.jobs) {
+                this.championObj.mapBySynergies[affiliation.name][job.name] =
+                    this.championObj.list.filter(champion =>
                         champion.traits.includes(affiliation.name) && champion.traits.includes(job.name)
                     )
                         .map(value => {
@@ -92,37 +100,37 @@ let app = new Vue({
     methods: {
         addChampions: function (dataId) {
             console.log(dataId);
-            if (!this.championsForSearch.map(target => target.dataId).includes(dataId))
-                this.championsForSearch = [...this.championsForSearch, this.championsMapById[dataId]];
-            this.championsForSearch = this.championsForSearch.sort((prev, next) => prev.cost - next.cost);
+            if (!this.championObj.requests.map(target => target.dataId).includes(dataId))
+                this.championObj.requests = [...this.championObj.requests, this.championObj.mapById[dataId]];
+            this.championObj.requests = this.championObj.requests.sort((prev, next) => prev.cost - next.cost);
         },
         addItems: function (dataId) {
             console.log(dataId);
-            if (!this.itemsForSearch.map(target => target.dataId).includes(dataId))
-                this.itemsForSearch = [...this.itemsForSearch, this.itemsMapById[dataId]];
+            if (!this.itemObj.requests.map(target => target.dataId).includes(dataId))
+                this.itemObj.requests = [...this.itemObj.requests, this.itemObj.mapById[dataId]];
         },
         addAugments: function (dataId) {
             console.log(dataId);
-            if (!this.augmentsForSearch.map(target => target.dataId).includes(dataId))
-                this.augmentsForSearch = [...this.augmentsForSearch, this.augmentsMapById[dataId]];
+            if (!this.augmentObj.requests.map(target => target.dataId).includes(dataId))
+                this.augmentObj.requests = [...this.augmentObj.requests, this.augmentObj.mapById[dataId]];
         },
         removeChampion(index) {
 
-            this.championsForSearch = [...this.championsForSearch.slice(0, index), ...this.championsForSearch.slice(index + 1, this.championsForSearch.length)]
+            this.championObj.requests = [...this.championObj.requests.slice(0, index), ...this.championObj.requests.slice(index + 1, this.championObj.requests.length)]
         },
         removeItem(index) {
-            this.itemsForSearch = [...this.itemsForSearch.slice(0, index), ...this.itemsForSearch.slice(index + 1, this.itemsForSearch.length)]
+            this.itemObj.requests = [...this.itemObj.requests.slice(0, index), ...this.itemObj.requests.slice(index + 1, this.itemObj.requests.length)]
         },
         removeAugment(index) {
-            this.augmentsForSearch = [...this.augmentsForSearch.slice(0, index), ...this.augmentsForSearch.slice(index + 1, this.augmentsForSearch.length)]
+            this.augmentObj.requests = [...this.augmentObj.requests.slice(0, index), ...this.augmentObj.requests.slice(index + 1, this.augmentObj.requests.length)]
         },
         async searchWinners() {
-            const winnersRes = await callSearchWinners(this.championsForSearch, this.itemsForSearch, this.augmentsForSearch, 0, 5);
+            const winnersRes = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, 0, 5);
             this.winners = winnersRes.winners;
             this.currentOffset = winnersRes.winners.length;
         },
         async replaceWinner(index) {
-            const response = await callSearchWinners(this.championsForSearch, this.itemsForSearch, this.currentOffset, 1)
+            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.currentOffset, 1)
             this.winners = [...this.winners.slice(0, index), ...this.winners.slice(index + 1, this.winners.length), ...response.winners]
             this.currentOffset++
         }
@@ -158,7 +166,7 @@ async function getAugments() {
 }
 
 async function callSearchWinners(champions, items, augments, offset, size) {
-    let request = {
+    let requests = {
         champions: champions.map(target => {
             return {dataId: target.dataId, tier: target.tier}
         }),
@@ -181,7 +189,7 @@ async function callSearchWinners(champions, items, augments, offset, size) {
         },
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(request), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
+        body: JSON.stringify(requests), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
     });
 
     return response.json();

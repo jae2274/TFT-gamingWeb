@@ -36,6 +36,33 @@
             height: 40px;
             width: 40px;
         }
+
+        /*.tft-tooltip {*/
+        /*    position: relative;*/
+        /*    display: inline-block;*/
+        /*}*/
+
+        .tft-tooltip .tft-tooltip-content {
+            visibility: hidden;
+            /*position: absolute;*/
+            /*z-index: 1;*/
+            /*bottom: 100%;*/
+            /*left: 50%;*/
+            /*margin-left: -60px; !* Adjust this value based on the size of your tooltip *!*/
+            /*width: 120px; !* Adjust this value based on the size of your tooltip *!*/
+            /*background-color: #333;*/
+            /*color: #fff;*/
+            /*text-align: center;*/
+            /*padding: 5px;*/
+            /*border-radius: 6px;*/
+        }
+
+        .tft-tooltip:hover .tft-tooltip-content {
+            visibility: visible;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+        }
+
     </style>
 </head>
 <body class="theme-dark cheatsheet">
@@ -47,38 +74,35 @@
                 <div style="display: inline-grid;">
                     <div class="augments"
                          style="width: 400px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
-                        <div class="augment" v-for="augment in augments" style="height: 30px;"
-                             v-on:click="addAugments(augment.dataId)">
+                        <div class="augment" v-for="augment in augmentObj.list" style="height: 30px;"
+                             v-on:click="addAugments(augment.dataId)" v-tooltip="augment.desc">
                             <img v-bind:src="augment.imageUrl" style="height: 100%;">
 
-                            {{augment.augmentName}}
+                            {{augment.name}}
+
                         </div>
                     </div>
-                    <div><input type="text" v-model="augmentKeyword">
+                    <div><input type="text" v-model="augmentObj.searchWord">
                         <div v-for="(target,index) in filteredAugments" class="targets"
                              style="position: relative;display: inline-block;">
                             <div v-bind:class="`tft-augment tft-augment--42 cost-`+target.cost"
-                                 data-toggle="tooltip"
-                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/augment/set${target.season}/`+target.augmentName"
-                                 data-original-title="" title="" style="
+                                 style="
                 display: inline-block;
-            " v-on:click="addAugments(target.dataId)">
+            " v-on:click="addAugments(target.dataId)" v-tooltip="target.desc">
                                 <img v-bind:src="target.imageUrl" alt=""
                                      style="float: left;display:inline-block;height: 100%;">
                             </div>
                         </div>
                     </div>
                     <div style="height: 40px;">
-                        <div v-for="(target,index) in augmentsForSearch" class="targets"
+                        <div v-for="(target,index) in augmentObj.requests" class="targets"
                              style="position: relative;display: inline-block;">
                             <div v-bind:class="`search-augment tft-augment tft-augment--42 cost-`+target.cost"
-                                 data-toggle="tooltip"
-                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/augment/set${target.season}/`+target.augmentName"
-                                 data-original-title="" title="" style="
+                                 style="
                 display: inline-block;
-            " v-on:click="removeAugment(index)">
+            " v-on:click="removeAugment(index)" v-tooltip="target.desc">
                                 <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;" v-on:click="removeAugment">
+                                     style="float: left;display:inline-block;height: 100%;">
                             </div>
                         </div>
                     </div>
@@ -86,45 +110,42 @@
                 <div style="display: inline-grid;">
                     <div class="items"
                          style="width: 500px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
-                        <div class="item" v-for="item in items" style="height: 30px;"
-                             v-on:click="addItems(item.dataId)">
+                        <div class="item" v-for="item in itemObj.list" style="height: 30px;"
+                             v-on:click="addItems(item.dataId)"
+                             v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
                             <img v-bind:src="item.imageUrl" style="height: 100%;">
 
-                            {{item.itemName}}
+                            {{item.name}}
                             <div style="height: 100%;float: right;display: flex;width: 22%;">
                                 <div style="height: 100%;" v-for="childItemName in item.childItems"
-                                     :set="childItem = itemsMapByName[childItemName]">
+                                     :set="childItem = itemObj.mapByName[childItemName]"
+                                >
                                     <img v-bind:src="childItem?childItem.imageUrl:'/image/question-mark.jpg'"
                                          style="height: 100%;">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div><input type="text" v-model="itemKeyword">
+                    <div><input type="text" v-model="itemObj.searchWord">
                         <div v-for="(target,index) in filteredItems" class="targets"
                              style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost"
-                                 data-toggle="tooltip"
-                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/item/set${target.season}/`+target.itemName"
-                                 data-original-title="" title="" style="
-                display: inline-block;
-            " v-on:click="addItems(target.dataId)">
+                            <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost" style="display: inline-block;"
+                                 v-on:click="addItems(target.dataId)"
+                                 v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
                                 <img v-bind:src="target.imageUrl" alt=""
                                      style="float: left;display:inline-block;height: 100%;">
                             </div>
                         </div>
                     </div>
                     <div style="height: 40px;">
-                        <div v-for="(target,index) in itemsForSearch" class="targets"
+                        <div v-for="(target,index) in itemObj.requests" class="targets"
                              style="position: relative;display: inline-block;">
-                            <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost"
-                                 data-toggle="tooltip"
-                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/item/set${target.season}/`+target.itemName"
-                                 data-original-title="" title="" style="
-                display: inline-block;
-            " v-on:click="removeItem(index)">
+                            <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost" style="
+                                    display: inline-block;
+                                " v-on:click="removeItem(index)"
+                                 v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
                                 <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;" v-on:click="removeItem">
+                                     style="float: left;display:inline-block;height: 100%;">
                             </div>
                         </div>
                     </div>
@@ -136,7 +157,7 @@
                             <thead>
                             <tr>
                                 <th></th>
-                                <th v-for="synergy in jobs">
+                                <th v-for="synergy in synergyObj.jobs">
                                     <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
                                          class="align-middle">
                                     <span class="align-middle">{{synergy.name}}</span><br>
@@ -145,20 +166,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="affiliation in affiliations">
+                            <tr v-for="affiliation in synergyObj.affiliations">
                                 <th>
                                     <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name" width="14"
                                          class="align-middle">
                                     <span class="align-middle">{{affiliation.name}}</span><br>
                                     <!--                                <span class="text-gray">2/3/4/5</span>-->
                                 </th>
-                                <td v-for="job in jobs">
+                                <td v-for="job in synergyObj.jobs">
 
-                                    <div v-for="champion in championsMap[affiliation.name][job.name]"
+                                    <div v-for="champion in championObj.mapBySynergies[affiliation.name][job.name]"
                                          v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
-                                         data-toggle="tooltip"
-                                         v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${champion.season}/`+champion.engName"
-                                         v-on:click="addChampions(champion.dataId)">
+                                         v-on:click="addChampions(champion.dataId)"
+                                         v-tooltip="champion.traits.join('&nbsp;&nbsp;')">
                                         <img v-bind:src="champion.imageUrl">
                                         <span class="cost">${{champion.cost}}</span>
                                     </div>
@@ -167,13 +187,10 @@
                             </tbody>
                         </table>
                     </div>
-                    <div><input type="text" v-model="championKeyword">
+                    <div><input type="text" v-model="championObj.searchWord">
                         <div v-for="(target,index) in filteredChampions" class="targets"
                              style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost"
-                                 data-toggle="tooltip"
-                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${target.season}/`+target.championName"
-                                 data-original-title="" title="" style="
+                            <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost" style="
                 display: inline-block;
             " v-on:click="addChampions(target.dataId)">
                                 <img v-bind:src="target.imageUrl" alt=""
@@ -182,14 +199,12 @@
                         </div>
                     </div>
                     <div>
-                        <div v-for="(target,index) in championsForSearch" class="targets"
+                        <div v-for="(target,index) in championObj.requests" class="targets"
                              style="position: relative;display: inline-block;">
                             <div class="holding-champions">
                                 <div class="how-many-that">
                                     <div v-bind:class="`search-champion tft-champion tft-champion--42 cost-`+target.cost"
-                                         data-toggle="tooltip"
-                                         v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/champion/set${target.season}/`+target.championName"
-                                         data-original-title="" title="" style="
+                                         style="
                 display: inline-block;
             " v-on:click="removeChampion(index)">
                                         <img v-bind:src="target.imageUrl" alt="스웨인"
@@ -221,37 +236,34 @@
             <div style="background-color: grey;width: auto;margin:5px; "
                  v-for="trait in winner.traits.filter(value => value.tierCurrent!=0).sort((a, b) =>b.tierCurrent-a.tierCurrent )"
                  :set="synergy = synergiesMapById[trait.name]">
-                <img v-bind:src="synergy.imageUrl" data-toggle="tooltip" title="" style="width:48px;"
-                     v-bind:data-original-title="`${synergy.name} ${trait.tierCurrent}`">
+                <img v-bind:src="synergy.imageUrl" style="width:48px;"
+                     v-tooltip="`${synergy.name} ${trait.tierCurrent}`">
             </div>
         </div>
         <div style="display: flex;">
             <div class="augments" style="padding-left: 10px;padding-top: 17px;">
-                <div class="augment" v-for="augment in winner.augments" :set="aug = augmentsMapById[augment]"
-                     data-toggle="tooltip" data-placement="top">
-                    <img v-bind:src="aug?aug.imageUrl:'/image/question-mark.jpg'" data-toggle="tooltip"
-                         v-bind:data-original-title="aug?aug.name:''" style="width:24px;height:24px;">
+                <div class="augment" v-for="augment in winner.augments" :set="aug = augmentObj.mapById[augment]">
+                    <img v-bind:src="aug?aug.imageUrl:'/image/question-mark.jpg'"
+                         v-tooltip="aug?aug.name:''" style="width:24px;height:24px;">
                 </div>
             </div>
 
             <div class="units" style="width:900px;">
-                <div class="unit" v-for="unit in winner.units" :set="champion = championsMapById[unit.characterId]"
+                <div class="unit" v-for="unit in winner.units" :set="champion = championObj.mapById[unit.characterId]"
                      style="width: 90px;height: 100px;">
-                    <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championsMapById[unit.characterId].cost}_stars${unit.tier}.png` "
+                    <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championObj.mapById[unit.characterId].cost}_stars${unit.tier}.png` "
                          class="stars">
                     <div class="cost-1">
                         <img v-bind:src="champion.imageUrl"
-                             v-bind:alt="champion.championName" data-toggle="tooltip"
-                             v-bind:title="champion.championName"
-                             v-bind:data-original-title="champion.championName"
+                             v-bind:alt="champion.name"
+                             v-tooltip="champion.name"
                              style="width:48px;"
-                             v-on:click="addChampions(championsMapById[unit.characterId].dataId)">
+                             v-on:click="addChampions(championObj.mapById[unit.characterId].dataId)">
                     </div>
                     <ul class="items" style="padding-top: 3px;">
-                        <img v-for="itemName in unit.itemNames" :set="item = itemsMapById[itemName]"
+                        <img v-for="itemName in unit.itemNames" :set="item = itemObj.mapById[itemName]"
                              v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
-                             data-toggle="tooltip" data-placement="bottom"
-                             v-bind:title="item?item.itemName:''"
+                             v-tooltip="item?item.name:''"
                              style="width:30px;height: 30px;">
                     </ul>
                 </div>
@@ -263,11 +275,14 @@
         </div>
     </div>
 </div>
+
+
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/v-tooltip"></script>
 <script src="/js/app.js"></script>
 </html>

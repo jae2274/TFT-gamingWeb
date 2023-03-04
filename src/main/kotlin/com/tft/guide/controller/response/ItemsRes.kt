@@ -7,8 +7,8 @@ data class ItemsRes(
 ) {
     data class ItemRes(
             var _id: String,
-            var itemName: String,
-            var itemEngName: String,
+            var name: String,
+            var engName: String,
             var itemEffect: String,
             var itemSpec: String,
             var imageUrl: String,
@@ -24,8 +24,8 @@ data class ItemsRes(
             fun of(item: Item): ItemRes {
                 return ItemRes(
                         _id = item._id,
-                        itemName = item.itemName,
-                        itemEngName = item.engName,
+                        name = item.itemName,
+                        engName = item.engName,
                         itemEffect = item.itemEffect,
                         itemSpec = item.itemSpec,
                         imageUrl = item.imageUrl,

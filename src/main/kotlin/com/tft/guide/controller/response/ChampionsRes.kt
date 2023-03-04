@@ -1,13 +1,11 @@
 package com.tft.guide.controller.response
 
-import com.tft.guide.entity.Champion
-
-data class ChampionsResponse(
+data class ChampionsRes(
         val champions: List<Champion>? = null
 ) {
 
     data class Champion(
-            val championName: String,
+            val name: String,
             val engName: String,
             val cost: Int,
             val traits: List<String>,
@@ -43,11 +41,11 @@ data class ChampionsResponse(
     }
 
     companion object {
-        fun of(champions: List<com.tft.guide.entity.Champion>): ChampionsResponse {
-            return ChampionsResponse(
+        fun of(champions: List<com.tft.guide.entity.Champion>): ChampionsRes {
+            return ChampionsRes(
                     champions.map { champion ->
                         Champion(
-                                championName = champion.championName,
+                                name = champion.championName,
                                 engName = champion.engName,
                                 dataId = champion.dataId,
                                 cost = champion.cost,

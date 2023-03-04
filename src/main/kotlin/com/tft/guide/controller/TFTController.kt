@@ -24,7 +24,7 @@ class TFTController(
     @GetMapping("/champions")
     fun champions(
             @RequestParam season: String
-    ): ChampionsResponse {
+    ): ChampionsRes {
         return tftService.champions(season)
     }
 
@@ -43,7 +43,7 @@ class TFTController(
     }
 
     @PostMapping("/winners")
-    fun winners(@RequestBody winnersRequest: WinnersRequest): WinnersResponse {
+    fun winners(@RequestBody winnersRequest: WinnersRequest): WinnersRes {
         return tftService.winners(winnersRequest)
     }
 }
