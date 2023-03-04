@@ -1,3 +1,30 @@
+Vue.component('championImg', {
+    // JavaScript는 camelCase
+    props: ['cost', 'imageUrl', 'traits'],
+    data: function () {
+        return {
+            costClass: 'cost-' + this.cost,
+            // tooltipText: this.traits.join('&nbsp;&nbsp;'),
+            // costText: '$' + this.cost,
+        }
+    },
+    computed: {
+        tooltipText() {
+            return this.traits.join('&nbsp;&nbsp;');
+        },
+        costText() {
+            return '$' + this.cost;
+        }
+    },
+    template:
+        `
+    <div class="tft-champion tft-champion--42" :class="costClass" v-tooltip="tooltipText">
+      <img :src="imageUrl">
+      <span class="cost">{{costText}}</span>
+    </div>
+    `
+})
+
 let app = new Vue({
     el: '#app',
     data: {

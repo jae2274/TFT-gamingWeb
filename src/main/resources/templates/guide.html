@@ -174,14 +174,13 @@
                                     <!--                                <span class="text-gray">2/3/4/5</span>-->
                                 </th>
                                 <td v-for="job in synergyObj.jobs">
-
-                                    <div v-for="champion in championObj.mapBySynergies[affiliation.name][job.name]"
-                                         v-bind:class="`tft-champion tft-champion--42 cost-`+champion.cost"
-                                         v-on:click="addChampions(champion.dataId)"
-                                         v-tooltip="champion.traits.join('&nbsp;&nbsp;')">
-                                        <img v-bind:src="champion.imageUrl">
-                                        <span class="cost">${{champion.cost}}</span>
-                                    </div>
+                                    <champion-img
+                                            v-for="champion in championObj.mapBySynergies[affiliation.name][job.name]"
+                                            v-bind:cost="champion.cost"
+                                            v-bind:image-url="champion.imageUrl"
+                                            v-bind:traits="champion.traits"
+                                            v-on:click.native="addChampions(champion.dataId)"
+                                    />
                                 </td>
                             </tr>
                             </tbody>
@@ -203,14 +202,13 @@
                              style="position: relative;display: inline-block;">
                             <div class="holding-champions">
                                 <div class="how-many-that">
-                                    <div v-bind:class="`search-champion tft-champion tft-champion--42 cost-`+target.cost"
-                                         style="
-                display: inline-block;
-            " v-on:click="removeChampion(index)">
-                                        <img v-bind:src="target.imageUrl" alt="스웨인"
-                                             style="float: left;display:inline-block;">
-                                        <span class="cost"
-                                              style="float:left;display:inline-block;">${{target.cost}}</span>
+                                    <div style="display: inline-block;">
+                                        <champion-img
+                                                v-bind:cost="target.cost"
+                                                v-bind:image-url="target.imageUrl"
+                                                v-bind:traits="target.traits"
+                                                v-on:click.native="removeChampion(index)"
+                                        />
                                     </div>
                                     <input type="number" name="name" min="1" max="3" v-model:value="target.tier"
                                            required=""
@@ -253,12 +251,13 @@
                      style="width: 90px;height: 100px;">
                     <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championObj.mapById[unit.characterId].cost}_stars${unit.tier}.png` "
                          class="stars">
-                    <div class="cost-1">
-                        <img v-bind:src="champion.imageUrl"
-                             v-bind:alt="champion.name"
-                             v-tooltip="champion.name"
-                             style="width:48px;"
-                             v-on:click="addChampions(championObj.mapById[unit.characterId].dataId)">
+                    <div>
+                        <champion-img
+                                v-bind:cost="champion.cost"
+                                v-bind:image-url="champion.imageUrl"
+                                v-bind:traits="champion.traits"
+                                v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
+                        />
                     </div>
                     <ul class="items" style="padding-top: 3px;">
                         <img v-for="itemName in unit.itemNames" :set="item = itemObj.mapById[itemName]"
