@@ -194,6 +194,6 @@ replay_pid*
 
 mongoData/
 
-application-aws.yml
+jasypt-password.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,kotlin
