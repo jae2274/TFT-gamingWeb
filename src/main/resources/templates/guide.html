@@ -18,12 +18,21 @@
             filter: blur(3px);
         }
 
+        .search-augment:hover {
+            filter: blur(3px);
+        }
+
         .item:hover {
             background-color: skyblue;
             font-weight: bold;
         }
 
         .tft-item {
+            height: 40px;
+            width: 40px;
+        }
+
+        .tft-augment {
             height: 40px;
             width: 40px;
         }
@@ -34,10 +43,50 @@
     <div class="guide-cheatsheet">
         <div class="mt-4 px-0 px-md-3 mb-5">
             <div style="display: flex;">
+
+                <div style="display: inline-grid;">
+                    <div class="augments"
+                         style="width: 400px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
+                        <div class="augment" v-for="augment in augments" style="height: 30px;"
+                             v-on:click="addAugments(augment.dataId)">
+                            <img v-bind:src="augment.imageUrl" style="height: 100%;">
+
+                            {{augment.augmentName}}
+                        </div>
+                    </div>
+                    <div><input type="text" v-model="augmentKeyword">
+                        <div v-for="(target,index) in filteredAugments" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`tft-augment tft-augment--42 cost-`+target.cost"
+                                 data-toggle="tooltip"
+                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/augment/set${target.season}/`+target.augmentName"
+                                 data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="addAugments(target.dataId)">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="height: 40px;">
+                        <div v-for="(target,index) in augmentsForSearch" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`search-augment tft-augment tft-augment--42 cost-`+target.cost"
+                                 data-toggle="tooltip"
+                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/augment/set${target.season}/`+target.augmentName"
+                                 data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="removeAugment(index)">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;" v-on:click="removeAugment">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div style="display: inline-grid;">
                     <div class="items"
                          style="width: 500px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
-                        <div class="item" v-for="item in filteredItems" style="height: 30px;"
+                        <div class="item" v-for="item in items" style="height: 30px;"
                              v-on:click="addItems(item.dataId)">
                             <img v-bind:src="item.imageUrl" style="height: 100%;">
 
@@ -51,7 +100,20 @@
                             </div>
                         </div>
                     </div>
-                    <div><input type="text" v-model="itemKeyword" v-on:keydown.enter="filterItems"></div>
+                    <div><input type="text" v-model="itemKeyword">
+                        <div v-for="(target,index) in filteredItems" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost"
+                                 data-toggle="tooltip"
+                                 v-bind:data-tooltip-url="`https://lolchess.gg/tooltip/item/set${target.season}/`+target.itemName"
+                                 data-original-title="" title="" style="
+                display: inline-block;
+            " v-on:click="addItems(target.dataId)">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                        </div>
+                    </div>
                     <div style="height: 40px;">
                         <div v-for="(target,index) in itemsForSearch" class="targets"
                              style="position: relative;display: inline-block;">
@@ -105,7 +167,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div><input type="text" v-model="championKeyword" v-on:keydown.enter="filterChampions">
+                    <div><input type="text" v-model="championKeyword">
                         <div v-for="(target,index) in filteredChampions" class="targets"
                              style="position: relative;display: inline-block;">
                             <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost"

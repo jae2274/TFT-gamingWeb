@@ -32,20 +32,16 @@ class DeckQueryRepository(
                     .on(QDeck_Unit.unit.itemNames.any().eq(item.dataId))
         }
 
-        val replaceCondition = BooleanBuilder()
-        request.replaceMatchIds?.takeIf { it.isNotEmpty() }?.run {
-            this.forEach {
-                replaceCondition.and(QDeck.deck.match_id.ne(it))
-            }
-        }
+        val conditionForAugment = request.augments.fold(BooleanBuilder()) { where, augmentReq -> where.and(QDeck.deck.augments.any().eq(augmentReq.dataId)) }
 
         return mongoDBQuery
                 .where(
                         QDeck.deck.placement.eq(1),
                         QDeck.deck.info.tft_game_type.eq(GameType.standard),
-                        replaceCondition
+                        conditionForAugment,
                 )
-                .limit(request.replaceMatchIds?.let { 1 } ?: 5)
+                .offset(request.offset)
+                .limit(request.size)
                 .orderBy(QDeck.deck.info.game_datetime.desc())
                 .fetch()
     }
