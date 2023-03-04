@@ -54,7 +54,7 @@ dependencies {
     }
     kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
 
-
+    implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3")
 
 
     implementation("com.h2database:h2")
