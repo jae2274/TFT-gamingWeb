@@ -195,5 +195,6 @@ replay_pid*
 mongoData/
 
 jasypt-password.yml
+src/test/kotlin/com/tft/guide/config/JasyptConfigTest.kt
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,kotlin
