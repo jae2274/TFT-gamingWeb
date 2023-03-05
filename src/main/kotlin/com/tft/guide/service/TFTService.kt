@@ -1,6 +1,6 @@
 package com.tft.guide.service
 
-import com.tft.guide.controller.request.WinnersRequest
+import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.controller.response.*
 import com.tft.guide.entity.Champion
 import com.tft.guide.entity.Deck
@@ -30,7 +30,7 @@ class TFTService(
         return ChampionsRes.of(champions)
     }
 
-    fun winners(winnersRequest: WinnersRequest): WinnersRes {
+    fun winners(winnersRequest: WinnersReq): WinnersRes {
         val decks: List<Deck> = deckQueryRepository.findByCharacterId(1, winnersRequest)
         return WinnersRes.of(decks)
     }

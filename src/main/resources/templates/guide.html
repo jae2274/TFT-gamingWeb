@@ -212,8 +212,14 @@
                                     </div>
                                     <input type="number" name="name" min="1" max="3" v-model:value="target.tier"
                                            required=""
-                                           placeholder="티어 입력"
-                                           class=" js-bound" style="height: 40px;">
+                                           placeholder="별 갯수 입력"
+                                           title="별 갯수 입력"
+                                           class=" js-bound" style="width:40px;height: 40px;">
+                                    <input type="number" name="name" min="0" max="3" v-model:value="target.itemCount"
+                                           required=""
+                                           placeholder="아이템 갯수 입력"
+                                           title="아이템 갯수 입력"
+                                           class=" js-bound" style="width:40px;height: 40px;">
                                 </div>
 
                             </div>
@@ -247,22 +253,22 @@
             </div>
 
             <div class="units" style="width:900px;">
-                <div class="unit" v-for="unit in winner.units" :set="champion = championObj.mapById[unit.characterId]"
+                <div class="unit" v-for="unit in winner.units"
                      style="width: 90px;height: 100px;">
                     <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championObj.mapById[unit.characterId].cost}_stars${unit.tier}.png` "
                          class="stars">
                     <div>
-                        <champion-img
-                                v-bind:cost="champion.cost"
-                                v-bind:image-url="champion.imageUrl"
-                                v-bind:traits="champion.traits"
-                                v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
+                        <champion-img :set="champion = championObj.mapById[unit.characterId]"
+                                      v-bind:cost="champion.cost"
+                                      v-bind:image-url="champion.imageUrl"
+                                      v-bind:traits="champion.traits"
+                                      v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
                         />
                     </div>
                     <ul class="items" style="padding-top: 3px;">
                         <img v-for="itemName in unit.itemNames" :set="item = itemObj.mapById[itemName]"
                              v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
-                             v-tooltip="item?item.name:''"
+                             v-tooltip="itemObj.mapById[itemName]?itemObj.mapById[itemName].name:''"
                              style="width:30px;height: 30px;">
                     </ul>
                 </div>

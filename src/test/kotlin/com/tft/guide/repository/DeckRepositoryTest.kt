@@ -1,14 +1,9 @@
 package com.tft.guide.repository
 
-import com.tft.guide.controller.request.WinnersRequest
-import com.tft.guide.entity.Deck
-import com.tft.guide.entity.QDeck
-import com.tft.guide.entity.QDeck_Unit
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.repository.support.SpringDataMongodbQuery
 
 @SpringBootTest
 class DeckRepositoryTest {

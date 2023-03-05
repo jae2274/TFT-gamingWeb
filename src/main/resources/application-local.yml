@@ -4,3 +4,9 @@ spring:
       host: localhost
       port: 27017
       database: tft_service
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${jasyptPassword}
+
+slack.token: ENC(IVD2Sq2qSXByzUcZQMv6b6fQxnoSrn+dsKSdf9W4XwZdO3kjMX7AsRYz0kRJTrUZ4OdyOtIy1wUPCey04lzFYA==)

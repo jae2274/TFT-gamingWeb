@@ -1,14 +1,10 @@
 Vue.component('championImg', {
     // JavaScript는 camelCase
     props: ['cost', 'imageUrl', 'traits'],
-    data: function () {
-        return {
-            costClass: 'cost-' + this.cost,
-            // tooltipText: this.traits.join('&nbsp;&nbsp;'),
-            // costText: '$' + this.cost,
-        }
-    },
     computed: {
+        costClass() {
+            return 'cost-' + this.cost;
+        },
         tooltipText() {
             return this.traits.join('&nbsp;&nbsp;');
         },
@@ -114,6 +110,7 @@ let app = new Vue({
                     )
                         .map(value => {
                             value.tier = 1;
+                            value.itemCount = 0;
                             return value
                         });
 
@@ -157,7 +154,7 @@ let app = new Vue({
             this.currentOffset = winnersRes.winners.length;
         },
         async replaceWinner(index) {
-            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.currentOffset, 1)
+            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.currentOffset, 1)
             this.winners = [...this.winners.slice(0, index), ...this.winners.slice(index + 1, this.winners.length), ...response.winners]
             this.currentOffset++
         }
@@ -166,36 +163,52 @@ let app = new Vue({
 
 async function getSynergies() {
     let response = await fetch("/synergies?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getChampions() {
     let response = await fetch("/champions?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getItems() {
     let response = await fetch("/items?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getAugments() {
     let response = await fetch("/augments?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function callSearchWinners(champions, items, augments, offset, size) {
     let requests = {
         champions: champions.map(target => {
-            return {dataId: target.dataId, tier: target.tier}
+            return {dataId: target.dataId, tier: target.tier, itemCount: target.itemCount}
         }),
         items: items.map(target => {
             return {dataId: target.dataId}
@@ -218,6 +231,11 @@ async function callSearchWinners(champions, items, augments, offset, size) {
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(requests), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
     });
+    let json = await response.json();
 
-    return response.json();
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }

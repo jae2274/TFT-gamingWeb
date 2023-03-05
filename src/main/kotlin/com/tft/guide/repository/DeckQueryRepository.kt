@@ -1,7 +1,7 @@
 package com.tft.guide.repository
 
 import com.querydsl.core.BooleanBuilder
-import com.tft.guide.controller.request.WinnersRequest
+import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.entity.Deck
 import com.tft.guide.entity.GameType
 import com.tft.guide.entity.QDeck
@@ -15,7 +15,7 @@ class DeckQueryRepository(
         val deckRepository: DeckRepository,
         val mongoTemplate: MongoTemplate,
 ) {
-    fun findByCharacterId(placement: Int, request: WinnersRequest): List<Deck> {
+    fun findByCharacterId(placement: Int, request: WinnersReq): List<Deck> {
         val springDataMongodbQuery = SpringDataMongodbQuery(mongoTemplate, Deck::class.java)
 
         var mongoDBQuery = springDataMongodbQuery
@@ -23,7 +23,15 @@ class DeckQueryRepository(
         for (champion in request.champions) {
             mongoDBQuery = mongoDBQuery
                     .anyEmbedded(QDeck.deck.units, QDeck_Unit.unit)
-                    .on(QDeck_Unit.unit.character_id.eq(champion.dataId).and(QDeck_Unit.unit.tier.goe(champion.tier)))
+                    .on(
+                            QDeck_Unit.unit.character_id.eq(champion.dataId)
+                                    .and(QDeck_Unit.unit.tier.goe(champion.tier))
+                                    .and(
+                                            champion.itemCount.takeIf { it > 0 }
+                                                    ?.let { QDeck_Unit.unit.itemNames[it - 1].isNotNull }
+                                                    ?: null
+                                    )
+                    )
         }
 
         for (item in request.items) {
