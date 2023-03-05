@@ -114,6 +114,7 @@ let app = new Vue({
                     )
                         .map(value => {
                             value.tier = 1;
+                            value.itemCount = 0;
                             return value
                         });
 
@@ -195,7 +196,7 @@ async function getAugments() {
 async function callSearchWinners(champions, items, augments, offset, size) {
     let requests = {
         champions: champions.map(target => {
-            return {dataId: target.dataId, tier: target.tier}
+            return {dataId: target.dataId, tier: target.tier, itemCount: target.itemCount}
         }),
         items: items.map(target => {
             return {dataId: target.dataId}

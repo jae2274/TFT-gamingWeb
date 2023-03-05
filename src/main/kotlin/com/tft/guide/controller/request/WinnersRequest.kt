@@ -11,6 +11,7 @@ data class WinnersRequest(
     data class ChampionReq(
             val dataId: String,
             val tier: Int,
+            val itemCount: Int,
     )
 
     data class ItemReq(

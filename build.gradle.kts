@@ -46,7 +46,6 @@ dependencies {
     testImplementation("org.springframework.batch:spring-batch-test")
 
 
-    api("com.querydsl:querydsl-jpa:5.0.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("com.querydsl:querydsl-mongodb:5.0.0") {
@@ -60,10 +59,6 @@ dependencies {
     implementation("com.h2database:h2")
     kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
 
-
-//    implementation("org.springframework.boot:spring-boot-starter-data-rest")
-//    implementation("org.springframework.data:spring-data-rest-hal-explorer")
-//    implementation("org.springframework.boot:spring-boot-starter-quartz")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
@@ -101,5 +96,4 @@ tasks.withType<Test> {
 
 kapt {
     correctErrorTypes = true
-//    annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
 }

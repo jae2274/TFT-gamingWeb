@@ -23,7 +23,15 @@ class DeckQueryRepository(
         for (champion in request.champions) {
             mongoDBQuery = mongoDBQuery
                     .anyEmbedded(QDeck.deck.units, QDeck_Unit.unit)
-                    .on(QDeck_Unit.unit.character_id.eq(champion.dataId).and(QDeck_Unit.unit.tier.goe(champion.tier)))
+                    .on(
+                            QDeck_Unit.unit.character_id.eq(champion.dataId)
+                                    .and(QDeck_Unit.unit.tier.goe(champion.tier))
+                                    .and(
+                                            champion.itemCount.takeIf { it > 0 }
+                                                    ?.let { QDeck_Unit.unit.itemNames[it - 1].isNotNull }
+                                                    ?: null
+                                    )
+                    )
         }
 
         for (item in request.items) {
