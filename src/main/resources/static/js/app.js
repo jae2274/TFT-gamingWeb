@@ -1,14 +1,10 @@
 Vue.component('championImg', {
     // JavaScript는 camelCase
     props: ['cost', 'imageUrl', 'traits'],
-    data: function () {
-        return {
-            costClass: 'cost-' + this.cost,
-            // tooltipText: this.traits.join('&nbsp;&nbsp;'),
-            // costText: '$' + this.cost,
-        }
-    },
     computed: {
+        costClass() {
+            return 'cost-' + this.cost;
+        },
         tooltipText() {
             return this.traits.join('&nbsp;&nbsp;');
         },
@@ -158,7 +154,7 @@ let app = new Vue({
             this.currentOffset = winnersRes.winners.length;
         },
         async replaceWinner(index) {
-            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.currentOffset, 1)
+            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.currentOffset, 1)
             this.winners = [...this.winners.slice(0, index), ...this.winners.slice(index + 1, this.winners.length), ...response.winners]
             this.currentOffset++
         }

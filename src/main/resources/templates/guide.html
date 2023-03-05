@@ -253,16 +253,16 @@
             </div>
 
             <div class="units" style="width:900px;">
-                <div class="unit" v-for="unit in winner.units" :set="champion = championObj.mapById[unit.characterId]"
+                <div class="unit" v-for="unit in winner.units"
                      style="width: 90px;height: 100px;">
                     <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championObj.mapById[unit.characterId].cost}_stars${unit.tier}.png` "
                          class="stars">
                     <div>
-                        <champion-img
-                                v-bind:cost="champion.cost"
-                                v-bind:image-url="champion.imageUrl"
-                                v-bind:traits="champion.traits"
-                                v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
+                        <champion-img :set="champion = championObj.mapById[unit.characterId]"
+                                      v-bind:cost="champion.cost"
+                                      v-bind:image-url="champion.imageUrl"
+                                      v-bind:traits="champion.traits"
+                                      v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
                         />
                     </div>
                     <ul class="items" style="padding-top: 3px;">
