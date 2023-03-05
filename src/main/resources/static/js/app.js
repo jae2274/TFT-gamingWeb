@@ -163,30 +163,46 @@ let app = new Vue({
 
 async function getSynergies() {
     let response = await fetch("/synergies?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getChampions() {
     let response = await fetch("/champions?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getItems() {
     let response = await fetch("/items?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function getAugments() {
     let response = await fetch("/augments?season=8");
-    let json = response.json();
+    let json = await response.json();
 
-    return json;
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }
 
 async function callSearchWinners(champions, items, augments, offset, size) {
@@ -215,6 +231,11 @@ async function callSearchWinners(champions, items, augments, offset, size) {
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(requests), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
     });
+    let json = await response.json();
 
-    return response.json();
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
 }

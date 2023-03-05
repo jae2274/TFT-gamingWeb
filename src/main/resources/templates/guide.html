@@ -268,7 +268,7 @@
                     <ul class="items" style="padding-top: 3px;">
                         <img v-for="itemName in unit.itemNames" :set="item = itemObj.mapById[itemName]"
                              v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
-                             v-tooltip="item?item.name:''"
+                             v-tooltip="itemObj.mapById[itemName]?itemObj.mapById[itemName].name:''"
                              style="width:30px;height: 30px;">
                     </ul>
                 </div>

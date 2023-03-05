@@ -36,7 +36,7 @@ dependencies {
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
     implementation("org.springframework.boot:spring-boot-devtools")
-
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -45,6 +45,7 @@ dependencies {
 
     testImplementation("org.springframework.batch:spring-batch-test")
 
+    implementation("net.gpedro.integrations.slack:slack-webhook:1.4.0")
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -66,11 +67,6 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-
-
-    implementation("org.mapstruct:mapstruct:1.5.2.Final")
-    kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
-    kaptTest("org.mapstruct:mapstruct-processor:1.5.2.Final")
 }
 
 

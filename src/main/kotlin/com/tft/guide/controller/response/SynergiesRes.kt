@@ -4,8 +4,8 @@ import com.tft.guide.entity.Synergy
 import com.tft.guide.entity.SynergyType
 
 data class SynergiesRes(
-        val affiliations: List<SynergyRes>? = null,
-        val jobs: List<SynergyRes>? = null,
+        val affiliations: List<SynergyRes>,
+        val jobs: List<SynergyRes>,
 ) {
     companion object {
         fun of(synergies: List<Synergy>): SynergiesRes {
