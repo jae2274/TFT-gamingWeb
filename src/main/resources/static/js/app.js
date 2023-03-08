@@ -50,6 +50,7 @@ Vue.component('winnerTemplate', {
                      v-for="synergy in synergies" 
                      v-on:mouseover="setHover(synergy, true)"
                      v-on:mouseout="setHover(synergy, false)"
+                     v-tooltip.top-end="synergy.desc+'<br/>'+synergy.stats.join('<br/>')"
                      >
                     <img v-bind:src="synergy.imageUrl" style="width:48px;">
                          <div>{{synergy.name}}<br/>{{synergy.numUnits}}</div>
@@ -241,7 +242,10 @@ let app = new Vue({
                     return {
                         synergies: winnerRes.traits
                             .filter(trait => trait.tierCurrent != 0)
-                            .sort((prev, next) => next.tierCurrent - prev.tierCurrent)
+                            .sort((prev, next) => {
+                                const diff = next.tierCurrent - prev.tierCurrent;
+                                return diff != 0 ? diff : next.numUnits - prev.numUnits;
+                            })
                             .map(trait => {
                                 let synergy = Object.assign({}, this.synergiesMapById[trait.name]);
                                 synergy.numUnits = trait.numUnits;
