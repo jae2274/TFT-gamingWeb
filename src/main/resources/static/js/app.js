@@ -21,6 +21,78 @@ Vue.component('championImg', {
     `
 })
 
+Vue.component('winnerTemplate', {
+    props: ['synergies', 'augments', 'champions', 'index'],
+    methods: {
+        replaceWinner(index) {
+            this.$emit('winner-replaced', index)
+        },
+        setHover(synergy, isHover) {
+            synergy.isHover = isHover;
+            // console.log(this.synergies.filter(value => value.dataId == synergy.dataId)[0].isHover);
+
+            for (const champion of this.champions) {
+                if (isHover) {
+                    const isSelected = champion.traits.includes(synergy.name);
+                    champion.isSelected = isSelected;
+                } else {
+                    champion.isSelected = false;
+                }
+            }
+        }
+    },
+    template: `
+        <div class="profile__match-history-v2__item placement-4 " data-region="KR"
+         data-game-id="6032745922" style="display: inline-block">
+
+            <div class="traits" style="width: 765px;display: flex; text-align: center;color:white;">
+                <div class="trait" style="width: 70px;margin:5px; "
+                     v-for="synergy in synergies" 
+                     v-on:mouseover="setHover(synergy, true)"
+                     v-on:mouseout="setHover(synergy, false)"
+                     >
+                    <img v-bind:src="synergy.imageUrl" style="width:48px;">
+                         <div>{{synergy.name}}<br/>{{synergy.numUnits}}</div>
+                </div>
+            </div>
+            <div style="display: flex;">
+                <div class="augments" style="padding-left: 10px;padding-top: 17px;">
+                    <div class="augment" v-for="augment in augments">
+                        <img v-bind:src="augment?augment.imageUrl:'/image/question-mark.jpg'"
+                             v-tooltip="augment?augment.name:''" style="width:24px;height:24px;">
+                    </div>
+                </div>
+    
+                <div class="units" style="width:900px;">
+                    <div class="unit" :class="{selected: champion.isSelected}" v-for="champion in champions"
+                         style="width: 90px;height: 100px;">
+                        <img v-bind:src=" '//cdn.lolchess.gg/images/tft/stars/cost' + champion.cost + '_stars'+champion.tier + '.png' "
+                             class="stars">
+                        <div>
+                            <champion-img
+                                    v-bind:cost="champion.cost"
+                                    v-bind:image-url="champion.imageUrl"
+                                    v-bind:traits="champion.traits"
+                                    v-on:click.native="addChampions(champion.dataId)"
+                            />
+                        </div>
+                        <ul class="items" style="padding-top: 3px;">
+                            <img v-for="item in champion.items"
+                                 v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
+                                 v-tooltip="item?item.name:''"
+                                 style="width:30px;height: 30px;">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    
+            <div v-on:click="replaceWinner(index)"
+                 style="height:100%;width:60px;background-color:sandybrown;position:absolute;top:0;right:0;cursor: pointer;">
+            </div>
+        </div>
+    `
+})
+
 let app = new Vue({
     el: '#app',
     data: {
@@ -150,13 +222,47 @@ let app = new Vue({
         },
         async searchWinners() {
             const winnersRes = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, 0, 5);
-            this.winners = winnersRes.winners;
+            this.winners = this.winnersOf(winnersRes);
+            // this.winners = winnersRes.winners;
             this.currentOffset = winnersRes.winners.length;
         },
         async replaceWinner(index) {
             const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.currentOffset, 1)
-            this.winners = [...this.winners.slice(0, index), ...this.winners.slice(index + 1, this.winners.length), ...response.winners]
+
+            this.winners.splice(index, 1);
+            for (const winner of this.winnersOf(response)) {
+                this.winners.push(winner)
+            }
             this.currentOffset++
+        },
+        winnersOf(winnersRes) {
+            return winnersRes.winners
+                .map(winnerRes => {
+                    return {
+                        synergies: winnerRes.traits
+                            .filter(trait => trait.tierCurrent != 0)
+                            .sort((prev, next) => next.tierCurrent - prev.tierCurrent)
+                            .map(trait => {
+                                let synergy = Object.assign({}, this.synergiesMapById[trait.name]);
+                                synergy.numUnits = trait.numUnits;
+                                return synergy;
+                            }),
+                        augments: winnerRes.augments
+                            .map(augment => this.augmentObj.mapById[augment]),
+                        champions: winnerRes.units
+                            .map(unit => {
+                                let champion = Object.assign({}, this.championObj.mapById[unit.characterId]);
+
+                                champion.tier = unit.tier;
+
+                                const items = unit.itemNames.map(itemName => this.itemObj.mapById[itemName])
+                                champion.items = items;
+                                champion.isSelected = false;
+
+                                return champion;
+                            })
+                    }
+                })
         }
     }
 })
@@ -239,3 +345,4 @@ async function callSearchWinners(champions, items, augments, offset, size) {
         alert(json.message)
     }
 }
+

@@ -37,30 +37,19 @@
             width: 40px;
         }
 
-        /*.tft-tooltip {*/
-        /*    position: relative;*/
-        /*    display: inline-block;*/
-        /*}*/
 
         .tft-tooltip .tft-tooltip-content {
             visibility: hidden;
-            /*position: absolute;*/
-            /*z-index: 1;*/
-            /*bottom: 100%;*/
-            /*left: 50%;*/
-            /*margin-left: -60px; !* Adjust this value based on the size of your tooltip *!*/
-            /*width: 120px; !* Adjust this value based on the size of your tooltip *!*/
-            /*background-color: #333;*/
-            /*color: #fff;*/
-            /*text-align: center;*/
-            /*padding: 5px;*/
-            /*border-radius: 6px;*/
         }
 
         .tft-tooltip:hover .tft-tooltip-content {
             visibility: visible;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 9999;
+        }
+
+        .selected {
+            background-color: sandybrown;
         }
 
     </style>
@@ -73,7 +62,7 @@
 
                 <div style="display: inline-grid;">
                     <div class="augments"
-                         style="width: 400px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
+                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
                         <div class="augment" v-for="augment in augmentObj.list" style="height: 30px;"
                              v-on:click="addAugments(augment.dataId)" v-tooltip="augment.desc">
                             <img v-bind:src="augment.imageUrl" style="height: 100%;">
@@ -109,7 +98,7 @@
                 </div>
                 <div style="display: inline-grid;">
                     <div class="items"
-                         style="width: 500px;height: 920px;overflow: scroll;background: white;font-size: 15px;">
+                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
                         <div class="item" v-for="item in itemObj.list" style="height: 30px;"
                              v-on:click="addItems(item.dataId)"
                              v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
@@ -233,52 +222,19 @@
             </div>
         </div>
     </div>
-    <div v-for="(winner, index) in winners" class="profile__match-history-v2__item placement-4 " data-region="KR"
-         data-game-id="6032745922" style="display: inline-block">
+    <div>
+        <winner-template v-for="(winner, index) in winners"
+                         v-bind:synergies="winner.synergies"
+                         v-bind:augments="winner.augments"
+                         v-bind:champions="winner.champions"
+                         v-bind:index="index"
+                         :key="winner.match_id"
+                         v-on:winner-replaced="replaceWinner">
 
-        <div class="traits" style="width: 765px;display: flex;">
-            <div style="background-color: grey;width: auto;margin:5px; "
-                 v-for="trait in winner.traits.filter(value => value.tierCurrent!=0).sort((a, b) =>b.tierCurrent-a.tierCurrent )"
-                 :set="synergy = synergiesMapById[trait.name]">
-                <img v-bind:src="synergy.imageUrl" style="width:48px;"
-                     v-tooltip="`${synergy.name} ${trait.tierCurrent}`">
-            </div>
-        </div>
-        <div style="display: flex;">
-            <div class="augments" style="padding-left: 10px;padding-top: 17px;">
-                <div class="augment" v-for="augment in winner.augments" :set="aug = augmentObj.mapById[augment]">
-                    <img v-bind:src="aug?aug.imageUrl:'/image/question-mark.jpg'"
-                         v-tooltip="aug?aug.name:''" style="width:24px;height:24px;">
-                </div>
-            </div>
-
-            <div class="units" style="width:900px;">
-                <div class="unit" v-for="unit in winner.units"
-                     style="width: 90px;height: 100px;">
-                    <img v-bind:src=" `//cdn.lolchess.gg/images/tft/stars/cost${championObj.mapById[unit.characterId].cost}_stars${unit.tier}.png` "
-                         class="stars">
-                    <div>
-                        <champion-img :set="champion = championObj.mapById[unit.characterId]"
-                                      v-bind:cost="champion.cost"
-                                      v-bind:image-url="champion.imageUrl"
-                                      v-bind:traits="champion.traits"
-                                      v-on:click.native="addChampions(championObj.mapById[unit.characterId].dataId)"
-                        />
-                    </div>
-                    <ul class="items" style="padding-top: 3px;">
-                        <img v-for="itemName in unit.itemNames" :set="item = itemObj.mapById[itemName]"
-                             v-bind:src="item?item.imageUrl:'/image/question-mark.jpg'" class="item"
-                             v-tooltip="itemObj.mapById[itemName]?itemObj.mapById[itemName].name:''"
-                             style="width:30px;height: 30px;">
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div v-on:click="replaceWinner(index)"
-             style="height:100%;width:60px;background-color:sandybrown;position:absolute;top:0;right:0;cursor: pointer;">
-        </div>
+        </winner-template>
     </div>
+
+
 </div>
 
 
