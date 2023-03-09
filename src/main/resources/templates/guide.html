@@ -22,6 +22,10 @@
             filter: blur(3px);
         }
 
+        .search-synergy:hover {
+            filter: blur(3px);
+        }
+
         .item:hover {
             background-color: skyblue;
             font-weight: bold;
@@ -33,6 +37,11 @@
         }
 
         .tft-augment {
+            height: 40px;
+            width: 40px;
+        }
+
+        .tft-synergy {
             height: 40px;
             width: 40px;
         }
@@ -92,6 +101,49 @@
             " v-on:click="removeAugment(index)" v-tooltip="target.desc">
                                 <img v-bind:src="target.imageUrl" alt=""
                                      style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: inline-grid;">
+                    <div class="synergies"
+                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
+                        <div class="synergy" v-for="synergy in synergyObj.list" style="height: 30px;"
+                             v-on:click="addSynergies(synergy.dataId)" v-tooltip="synergy.desc">
+                            <img v-bind:src="synergy.imageUrl" style="height: 100%;">
+
+                            {{synergy.name}}
+
+                        </div>
+                    </div>
+                    <div><input type="text" v-model="synergyObj.searchWord">
+                        <div v-for="(target,index) in filteredSynergies" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`tft-synergy tft-synergy--42 cost-`+target.cost"
+                                 style="
+                display: inline-block;
+            " v-on:click="addSynergies(target.dataId)" v-tooltip="target.desc">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="height: 40px;">
+                        <div v-for="(target,index) in synergyObj.requests" class="targets"
+                             style="position: relative;display: inline-block;">
+                            <div v-bind:class="`search-synergy tft-synergy tft-synergy--42 cost-`+target.cost"
+                                 style="
+                display: inline-block;
+            " v-on:click="removeSynergy(index)" v-tooltip="target.desc">
+                                <img v-bind:src="target.imageUrl" alt=""
+                                     style="float: left;display:inline-block;height: 100%;">
+                            </div>
+                            <div>
+                                <input type="number" name="name" min="1" v-model:value="target.tier"
+                                       required=""
+                                       placeholder="시너지 단계"
+                                       title="시너지 단계"
+                                       class=" js-bound" style="width:40px;height: 40px;">
                             </div>
                         </div>
                     </div>

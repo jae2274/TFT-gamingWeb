@@ -5,6 +5,7 @@ import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.entity.Deck
 import com.tft.guide.entity.GameType
 import com.tft.guide.entity.QDeck
+import com.tft.guide.entity.QDeck_Trait
 import com.tft.guide.entity.QDeck_Unit
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.repository.support.SpringDataMongodbQuery
@@ -38,6 +39,15 @@ class DeckQueryRepository(
             mongoDBQuery = mongoDBQuery
                     .anyEmbedded(QDeck.deck.units, QDeck_Unit.unit)
                     .on(QDeck_Unit.unit.itemNames.any().eq(item.dataId))
+        }
+
+        for (synergy in request.synergies) {
+            mongoDBQuery = mongoDBQuery
+                    .anyEmbedded(QDeck.deck.traits, QDeck_Trait.trait)
+                    .on(
+                            QDeck_Trait.trait.name.eq(synergy.dataId)
+                                    .and(QDeck_Trait.trait.tier_current.goe(synergy.tier))
+                    )
         }
 
         val conditionForAugment = request.augments.fold(BooleanBuilder()) { where, augmentReq -> where.and(QDeck.deck.augments.any().eq(augmentReq.dataId)) }

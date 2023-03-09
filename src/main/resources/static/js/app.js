@@ -64,7 +64,7 @@ Vue.component('winnerTemplate', {
                     </div>
                 </div>
     
-                <div class="units" style="width:900px;">
+                <div class="units" style="width:1000px;">
                     <div class="unit" :class="{selected: champion.isSelected}" v-for="champion in champions"
                          style="width: 90px;height: 100px;">
                         <img v-bind:src=" '//cdn.lolchess.gg/images/tft/stars/cost' + champion.cost + '_stars'+champion.tier + '.png' "
@@ -121,8 +121,12 @@ let app = new Vue({
         synergyObj: {
             jobs: [],
             affiliations: [],
+            list: [],
+            searchWord: '',
+            requests: [],
+            mapById: {},
+            // synergiesMapById: {},
         },
-        synergiesMapById: {},
         winners: [],
         currentOffset: 0,
     },
@@ -136,6 +140,9 @@ let app = new Vue({
         filteredChampions() {
             return this.championObj.searchWord ? this.championObj.list.filter(value => value.name.includes(this.championObj.searchWord)) : [];
         },
+        filteredSynergies() {
+            return this.synergyObj.searchWord ? this.synergyObj.list.filter(value => value.name.includes(this.synergyObj.searchWord)) : [];
+        },
     },
     async mounted() {
         const promiseSynergies = getSynergies();
@@ -145,7 +152,7 @@ let app = new Vue({
 
 
         const synergyRes = (await promiseSynergies);
-        const synergies = [...synergyRes.jobs, ...synergyRes.affiliations]
+        this.synergyObj.list = [...synergyRes.jobs, ...synergyRes.affiliations]
         this.championObj.list = (await promistChampions).champions;
         this.itemObj.list = (await promiseItems).items;
 
@@ -163,8 +170,9 @@ let app = new Vue({
             this.itemObj.mapByName[item.name] = item;
         })
 
-        synergies.forEach(synergy => {
-            this.synergiesMapById[synergy.dataId] = synergy;
+        this.synergyObj.list.forEach(synergy => {
+            this.synergyObj.mapById[synergy.dataId] = synergy;
+            synergy.tier = 1;
         })
 
         this.augmentObj.list.forEach(augment => {
@@ -211,6 +219,11 @@ let app = new Vue({
             if (!this.augmentObj.requests.map(target => target.dataId).includes(dataId))
                 this.augmentObj.requests = [...this.augmentObj.requests, this.augmentObj.mapById[dataId]];
         },
+        addSynergies: function (dataId) {
+            console.log(dataId);
+            if (!this.synergyObj.requests.map(target => target.dataId).includes(dataId))
+                this.synergyObj.requests = [...this.synergyObj.requests, this.synergyObj.mapById[dataId]];
+        },
         removeChampion(index) {
 
             this.championObj.requests = [...this.championObj.requests.slice(0, index), ...this.championObj.requests.slice(index + 1, this.championObj.requests.length)]
@@ -221,14 +234,17 @@ let app = new Vue({
         removeAugment(index) {
             this.augmentObj.requests = [...this.augmentObj.requests.slice(0, index), ...this.augmentObj.requests.slice(index + 1, this.augmentObj.requests.length)]
         },
+        removeSynergy(index) {
+            this.synergyObj.requests = [...this.synergyObj.requests.slice(0, index), ...this.synergyObj.requests.slice(index + 1, this.synergyObj.requests.length)]
+        },
         async searchWinners() {
-            const winnersRes = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, 0, 5);
+            const winnersRes = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.synergyObj.requests, 0, 5);
             this.winners = this.winnersOf(winnersRes);
             // this.winners = winnersRes.winners;
             this.currentOffset = winnersRes.winners.length;
         },
         async replaceWinner(index) {
-            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.currentOffset, 1)
+            const response = await callSearchWinners(this.championObj.requests, this.itemObj.requests, this.augmentObj.requests, this.synergyObj.requests, this.currentOffset, 1)
 
             this.winners.splice(index, 1);
             for (const winner of this.winnersOf(response)) {
@@ -247,7 +263,7 @@ let app = new Vue({
                                 return diff != 0 ? diff : next.numUnits - prev.numUnits;
                             })
                             .map(trait => {
-                                let synergy = Object.assign({}, this.synergiesMapById[trait.name]);
+                                let synergy = Object.assign({}, this.synergyObj.mapById[trait.name]);
                                 synergy.numUnits = trait.numUnits;
                                 return synergy;
                             }),
@@ -315,7 +331,7 @@ async function getAugments() {
     }
 }
 
-async function callSearchWinners(champions, items, augments, offset, size) {
+async function callSearchWinners(champions, items, augments, synergies, offset, size) {
     let requests = {
         champions: champions.map(target => {
             return {dataId: target.dataId, tier: target.tier, itemCount: target.itemCount}
@@ -325,6 +341,9 @@ async function callSearchWinners(champions, items, augments, offset, size) {
         }),
         augments: augments.map(target => {
             return {dataId: target.dataId}
+        }),
+        synergies: synergies.map(target => {
+            return {dataId: target.dataId, tier: target.tier}
         }),
         offset,
         size
