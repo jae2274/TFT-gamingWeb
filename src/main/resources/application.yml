@@ -12,3 +12,13 @@ spring:
       enabled: false
     livereload:
       enabled: true
+
+## log
+logging:
+  file:
+    name: './logs/app.log'
+  level:
+    root: info
+  logback:
+    rollingpolicy:
+      max-history: 15
