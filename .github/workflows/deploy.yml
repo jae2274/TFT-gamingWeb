@@ -28,10 +28,9 @@ jobs:
           replace-with: '-'
           flags: 'g'
       - name: Replace string in file
-        working-directory: elastic_beanstalk
         uses: MathieuSoysal/replace-string-in-file@v1.0.0
         with:
-          file: .ebextensions/docker_variables.config
+          file: elastic_beanstalk/.ebextensions/docker_variables.config
           old-string: WILL_REPLACED_JASYPT_PASSWORD
           new-string: ${{ secrets.JASYPT_PASSWORD }}
       - name: make zip file # 압축 파일을 만들어준다.
