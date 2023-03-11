@@ -2,7 +2,17 @@
   "AWSEBDockerrunVersion": "1",
   "Image": {
     "Name": "owl2274/tft-gaming-web:latest",
-    "Update": "true"
+    "Update": "true",
+    "environment": [
+      {
+        "name": "PROFILE",
+        "value": "aws"
+      },
+      {
+        "name": "JASYPT_PASSWORD",
+        "value": "WILL_REPLACED_JASYPT_PASSWORD"
+      }
+    ]
   },
   "Ports": [
     {
