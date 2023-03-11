@@ -9,18 +9,12 @@ jobs:
     steps:
       - name: Checkout Latest Repo
         uses: actions/checkout@master
-      ### Gradle ###
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew build
       - name: Docker build
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker build --tag owl2274/tft-gaming-web:latest .
           docker push owl2274/tft-gaming-web:latest
-          
+
       - name: Get timestamp
         uses: gerred/actions/current-time@master
         id: current-time
