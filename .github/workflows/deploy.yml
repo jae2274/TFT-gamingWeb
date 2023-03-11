@@ -28,11 +28,15 @@ jobs:
           replace-with: '-'
           flags: 'g'
       - name: Replace string in file
+        working-directory: elastic_beanstalk
         uses: MathieuSoysal/replace-string-in-file@v1.0.0
         with:
-          file: Dockerrun.aws.json
+          file: .ebextensions/docker_variables.config
           old-string: WILL_REPLACED_JASYPT_PASSWORD
           new-string: ${{ secrets.JASYPT_PASSWORD }}
+      - name: make zip file # 압축 파일을 만들어준다.
+        working-directory: elastic_beanstalk
+        run: zip -r app.zip Dockerrun.aws.json .ebextensions
       # Beanstalk 플러그인을 사용
       # 미리 생성해둔 IAM 인증키를 사용
       - name: Beanstalk Deploy
@@ -44,4 +48,4 @@ jobs:
           environment_name: Tftgamingweb-env-3
           version_label: "github-action--${{ steps.format-time.outputs.replaced }}"
           region: ap-northeast-2
-          deployment_package: Dockerrun.aws.json
+          deployment_package: elastic_beanstalk/app.zip
