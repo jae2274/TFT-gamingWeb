@@ -71,7 +71,7 @@
 
                 <div style="display: inline-grid;">
                     <div class="augments"
-                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
+                         style="width: 260px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
                         <div class="augment" v-for="augment in augmentObj.list" style="height: 30px;"
                              v-on:click="addAugments(augment.dataId)" v-tooltip="augment.desc">
                             <img v-bind:src="augment.imageUrl" style="height: 100%;">
@@ -107,7 +107,7 @@
                 </div>
                 <div style="display: inline-grid;">
                     <div class="synergies"
-                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
+                         style="width: 260px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
                         <div class="synergy" v-for="synergy in synergyObj.list" style="height: 30px;"
                              v-on:click="addSynergies(synergy.dataId)" v-tooltip="synergy.desc">
                             <img v-bind:src="synergy.imageUrl" style="height: 100%;">
@@ -150,7 +150,7 @@
                 </div>
                 <div style="display: inline-grid;">
                     <div class="items"
-                         style="width: 350px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
+                         style="width: 300px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
                         <div class="item" v-for="item in itemObj.list" style="height: 30px;"
                              v-on:click="addItems(item.dataId)"
                              v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
