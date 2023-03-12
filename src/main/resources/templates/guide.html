@@ -68,201 +68,229 @@
     <div class="guide-cheatsheet">
         <div class="mt-4 px-0 px-md-3 mb-5">
             <div style="display: flex;">
+                <div>
+                    <div style="display: flex;height: 500px;">
+                        <div style="display: inline-grid;">
+                            <div class="augments"
+                                 style="width: 200px;overflow-y: scroll;color: white;font-size: 15px;">
+                                <div class="augment" v-for="augment in augmentObj.list" style="height: 30px;"
+                                     v-on:click="addAugments(augment.dataId)" v-tooltip="augment.desc">
+                                    <img v-bind:src="augment.imageUrl" style="height: 100%;">
 
-                <div style="display: inline-grid;">
-                    <div class="augments"
-                         style="width: 260px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
-                        <div class="augment" v-for="augment in augmentObj.list" style="height: 30px;"
-                             v-on:click="addAugments(augment.dataId)" v-tooltip="augment.desc">
-                            <img v-bind:src="augment.imageUrl" style="height: 100%;">
+                                    {{augment.name}}
 
-                            {{augment.name}}
-
-                        </div>
-                    </div>
-                    <div><input type="text" v-model="augmentObj.searchWord">
-                        <div v-for="(target,index) in filteredAugments" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-augment tft-augment--42 cost-`+target.cost"
-                                 style="
+                                </div>
+                            </div>
+                            <div style="position: relative">
+                                <div style="position: absolute;bottom: 25px;padding: 5px;background-color: rgba(0, 0, 0, 0.5);">
+                                    <div v-for="(target,index) in filteredAugments" class="targets"
+                                         style="position: relative;display: inline-block;">
+                                        <div v-bind:class="`tft-augment tft-augment--42 cost-`+target.cost"
+                                             style="
                 display: inline-block;
             " v-on:click="addAugments(target.dataId)" v-tooltip="target.desc">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
+                                            <img v-bind:src="target.imageUrl" alt=""
+                                                 style="float: left;display:inline-block;height: 100%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" v-model="augmentObj.searchWord">
+
                             </div>
-                        </div>
-                    </div>
-                    <div style="height: 40px;">
-                        <div v-for="(target,index) in augmentObj.requests" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`search-augment tft-augment tft-augment--42 cost-`+target.cost"
-                                 style="
+                            <div style="height: 40px;">
+                                <div v-for="(target,index) in augmentObj.requests" class="targets"
+                                     style="position: relative;display: inline-block;">
+                                    <div v-bind:class="`search-augment tft-augment tft-augment--42 cost-`+target.cost"
+                                         style="
                 display: inline-block;
             " v-on:click="removeAugment(index)" v-tooltip="target.desc">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
+                                        <img v-bind:src="target.imageUrl" alt=""
+                                             style="float: left;display:inline-block;height: 100%;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div style="display: inline-grid;">
-                    <div class="synergies"
-                         style="width: 260px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
-                        <div class="synergy" v-for="synergy in synergyObj.list" style="height: 30px;"
-                             v-on:click="addSynergies(synergy.dataId)" v-tooltip="synergy.desc">
-                            <img v-bind:src="synergy.imageUrl" style="height: 100%;">
+                        <div style="display: inline-grid;">
+                            <div class="synergies"
+                                 style="width: 200px;overflow-y: scroll;color: white;font-size: 15px;">
+                                <div class="synergy" v-for="synergy in synergyObj.list" style="height: 30px;"
+                                     v-on:click="addSynergies(synergy.dataId)" v-tooltip="synergy.desc">
+                                    <img v-bind:src="synergy.imageUrl" style="height: 100%;">
 
-                            {{synergy.name}}
+                                    {{synergy.name}}
 
-                        </div>
-                    </div>
-                    <div><input type="text" v-model="synergyObj.searchWord">
-                        <div v-for="(target,index) in filteredSynergies" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-synergy tft-synergy--42 cost-`+target.cost"
-                                 style="
+                                </div>
+                            </div>
+                            <div style="position: relative">
+                                <div style="position: absolute;bottom: 25px;padding: 5px;background-color: rgba(0, 0, 0, 0.5);">
+                                    <div v-for="(target,index) in filteredSynergies" class="targets"
+                                         style="position: relative;display: inline-block;">
+                                        <div v-bind:class="`tft-synergy tft-synergy--42 cost-`+target.cost"
+                                             style="
                 display: inline-block;
             " v-on:click="addSynergies(target.dataId)" v-tooltip="target.desc">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
+                                            <img v-bind:src="target.imageUrl" alt=""
+                                                 style="float: left;display:inline-block;height: 100%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" v-model="synergyObj.searchWord">
+
                             </div>
-                        </div>
-                    </div>
-                    <div style="height: 40px;">
-                        <div v-for="(target,index) in synergyObj.requests" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`search-synergy tft-synergy tft-synergy--42 cost-`+target.cost"
-                                 style="
+                            <div style="height: 40px;">
+                                <div v-for="(target,index) in synergyObj.requests" class="targets"
+                                     style="position: relative;display: inline-block;">
+                                    <div class="search-synergy tft-synergy tft-synergy--42"
+                                         style="
                 display: inline-block;
             " v-on:click="removeSynergy(index)" v-tooltip="target.desc">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
-                            </div>
-                            <div>
-                                <input type="number" name="name" min="1" v-model:value="target.tier"
-                                       required=""
-                                       placeholder="시너지 단계"
-                                       title="시너지 단계"
-                                       class=" js-bound" style="width:40px;height: 40px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: inline-grid;">
-                    <div class="items"
-                         style="width: 300px;height: 920px;overflow-y: scroll;color: white;font-size: 15px;">
-                        <div class="item" v-for="item in itemObj.list" style="height: 30px;"
-                             v-on:click="addItems(item.dataId)"
-                             v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
-                            <img v-bind:src="item.imageUrl" style="height: 100%;">
-
-                            {{item.name}}
-                            <div style="height: 100%;float: right;display: flex;width: 22%;">
-                                <div style="height: 100%;" v-for="childItemName in item.childItems"
-                                     :set="childItem = itemObj.mapByName[childItemName]"
-                                >
-                                    <img v-bind:src="childItem?childItem.imageUrl:'/image/question-mark.jpg'"
-                                         style="height: 100%;">
+                                        <img v-bind:src="target.imageUrl" alt=""
+                                             style="float: left;display:inline-block;height: 100%;">
+                                    </div>
+                                    <div>
+                                        <input type="number" name="name" min="1" v-model:value="target.tier"
+                                               required=""
+                                               placeholder="시너지 단계"
+                                               title="시너지 단계"
+                                               class=" js-bound" style="width:40px;height: 40px;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div><input type="text" v-model="itemObj.searchWord">
-                        <div v-for="(target,index) in filteredItems" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost" style="display: inline-block;"
-                                 v-on:click="addItems(target.dataId)"
-                                 v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
+                    <div style="display: flex; height: 500px;">
+                        <div style="display: inline-grid;">
+                            <div class="items"
+                                 style="width: 290px;overflow-y: scroll;color: white;font-size: 15px;">
+                                <div class="item" v-for="item in itemObj.list" style="height: 30px;"
+                                     v-on:click="addItems(item.dataId)"
+                                     v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
+                                    <img v-bind:src="item.imageUrl" style="height: 100%;">
+
+                                    {{item.name}}
+                                    <div style="height: 100%;float: right;display: flex;width: 22%;">
+                                        <div style="height: 100%;" v-for="childItemName in item.childItems"
+                                             :set="childItem = itemObj.mapByName[childItemName]"
+                                        >
+                                            <img v-bind:src="childItem?childItem.imageUrl:'/image/question-mark.jpg'"
+                                                 style="height: 100%;">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div style="height: 40px;">
-                        <div v-for="(target,index) in itemObj.requests" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost" style="
+                            <div style="position: relative">
+                                <div style="position: absolute;bottom: 25px;padding: 5px;background-color: rgba(0, 0, 0, 0.5);">
+                                    <div v-for="(target,index) in filteredItems" class="targets"
+                                         style="position: relative;display: inline-block;">
+                                        <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost"
+                                             style="display: inline-block;"
+                                             v-on:click="addItems(target.dataId)"
+                                             v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
+                                            <img v-bind:src="target.imageUrl" alt=""
+                                                 style="float: left;display:inline-block;height: 100%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" v-model="itemObj.searchWord">
+                            </div>
+                            <div style="height: 40px;">
+                                <div v-for="(target,index) in itemObj.requests" class="targets"
+                                     style="position: relative;display: inline-block;">
+                                    <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost" style="
                                     display: inline-block;
                                 " v-on:click="removeItem(index)"
-                                 v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
+                                         v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
+                                        <img v-bind:src="target.imageUrl" alt=""
+                                             style="float: left;display:inline-block;height: 100%;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="guide-cheatsheet__synergy"
-                     style="overflow-x: auto;display: flex;align-items: center;display: inline-grid;">
-                    <div style="min-width: 1100px;float: left;display: inline-block;width: 33%;">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th v-for="synergy in synergyObj.jobs">
-                                    <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
-                                         class="align-middle">
-                                    <span class="align-middle">{{synergy.name}}</span><br>
-                                    <!--                                <span class="text-gray">2/3/4/5</span>-->
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="affiliation in synergyObj.affiliations">
-                                <th>
-                                    <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name" width="14"
-                                         class="align-middle">
-                                    <span class="align-middle">{{affiliation.name}}</span><br>
-                                    <!--                                <span class="text-gray">2/3/4/5</span>-->
-                                </th>
-                                <td v-for="job in synergyObj.jobs">
-                                    <champion-img
-                                            v-for="champion in championObj.mapBySynergies[affiliation.name][job.name]"
-                                            v-bind:cost="champion.cost"
-                                            v-bind:image-url="champion.imageUrl"
-                                            v-bind:traits="champion.traits"
-                                            v-on:click.native="addChampions(champion.dataId)"
-                                    />
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div><input type="text" v-model="championObj.searchWord">
-                        <div v-for="(target,index) in filteredChampions" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost" style="
-                display: inline-block;
-            " v-on:click="addChampions(target.dataId)">
-                                <img v-bind:src="target.imageUrl" alt=""
-                                     style="float: left;display:inline-block;height: 100%;">
-                            </div>
+                <div style="display: inline-grid">
+                    <div class="guide-cheatsheet__synergy"
+                         style="overflow-x: auto;display: flex;align-items: center;display: inline-grid;">
+                        <div style="min-width: 1100px;float: left;display: inline-block;width: 33%;">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th v-for="synergy in synergyObj.jobs">
+                                        <div>
+                                            <img v-bind:src="synergy.imageUrl" v-bind:alt="synergy.name" width="14"
+                                                 class="align-middle">
+                                        </div>
+                                        <span class="align-middle">{{synergy.name}}</span><br>
+                                        <!--                                <span class="text-gray">2/3/4/5</span>-->
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="affiliation in synergyObj.affiliations">
+                                    <th>
+                                        <div>
+                                            <img v-bind:src="affiliation.imageUrl" v-bind:alt="affiliation.name"
+                                                 width="14"
+                                                 class="align-middle">
+                                        </div>
+                                        <span class="align-middle">{{affiliation.name}}</span><br>
+                                        <!--                                <span class="text-gray">2/3/4/5</span>-->
+                                    </th>
+                                    <td v-for="job in synergyObj.jobs">
+                                        <champion-img
+                                                v-for="champion in championObj.mapBySynergies[affiliation.name][job.name]"
+                                                v-bind:cost="champion.cost"
+                                                v-bind:image-url="champion.imageUrl"
+                                                v-bind:traits="champion.traits"
+                                                v-on:click.native="addChampions(champion.dataId)"
+                                        />
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
+
                     </div>
                     <div>
-                        <div v-for="(target,index) in championObj.requests" class="targets"
-                             style="position: relative;display: inline-block;">
-                            <div class="holding-champions">
-                                <div class="how-many-that">
-                                    <div style="display: inline-block;">
-                                        <champion-img
-                                                v-bind:cost="target.cost"
-                                                v-bind:image-url="target.imageUrl"
-                                                v-bind:traits="target.traits"
-                                                v-on:click.native="removeChampion(index)"
-                                        />
-                                    </div>
-                                    <input type="number" name="name" min="1" max="3" v-model:value="target.tier"
-                                           required=""
-                                           placeholder="별 갯수 입력"
-                                           title="별 갯수 입력"
-                                           class=" js-bound" style="width:40px;height: 40px;">
-                                    <input type="number" name="name" min="0" max="3" v-model:value="target.itemCount"
-                                           required=""
-                                           placeholder="아이템 갯수 입력"
-                                           title="아이템 갯수 입력"
-                                           class=" js-bound" style="width:40px;height: 40px;">
+                        <div><input type="text" v-model="championObj.searchWord">
+                            <div v-for="(target,index) in filteredChampions" class="targets"
+                                 style="position: relative;display: inline-block;">
+                                <div v-bind:class="`tft-champion tft-champion--42 cost-`+target.cost" style="
+                display: inline-block;
+            " v-on:click="addChampions(target.dataId)">
+                                    <img v-bind:src="target.imageUrl" alt=""
+                                         style="float: left;display:inline-block;height: 100%;">
                                 </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div v-for="(target,index) in championObj.requests" class="targets"
+                                 style="position: relative;display: inline-block;">
+                                <div class="holding-champions">
+                                    <div class="how-many-that">
+                                        <div style="display: inline-block;">
+                                            <champion-img
+                                                    v-bind:cost="target.cost"
+                                                    v-bind:image-url="target.imageUrl"
+                                                    v-bind:traits="target.traits"
+                                                    v-on:click.native="removeChampion(index)"
+                                            />
+                                        </div>
+                                        <input type="number" name="name" min="1" max="3" v-model:value="target.tier"
+                                               required=""
+                                               placeholder="별 갯수 입력"
+                                               title="별 갯수 입력"
+                                               class=" js-bound" style="width:40px;height: 40px;">
+                                        <input type="number" name="name" min="0" max="3"
+                                               v-model:value="target.itemCount"
+                                               required=""
+                                               placeholder="아이템 갯수 입력"
+                                               title="아이템 갯수 입력"
+                                               class=" js-bound" style="width:40px;height: 40px;">
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
