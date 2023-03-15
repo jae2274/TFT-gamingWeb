@@ -67,6 +67,7 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 

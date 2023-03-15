@@ -1,37 +1,31 @@
 package com.tft.guide.controller.response
 
-import com.tft.guide.entity.Deck
+import com.tft.guide.entity.WinnerDeck
 
 data class WinnersRes(
-        val winners: List<WinnerRes>? = null,
+        val winners: List<WinnerRes>?,
 ) {
     data class WinnerRes(
-            val gameVersion: String? = null,
+            val gameVersion: String?,
             val match_id: String,
-            val goldLeft: Int? = null,
-            val lastRound: Int? = null,
-            val level: Int? = null,
-            val placement: Int? = null,
-            val playersEliminated: Int? = null,
-            val puuid: String? = null,
-            val tftSetNumber: Int? = null,
-            val timeEliminated: Float? = null,
-            val totalDamageToPlayers: Int? = null,
+            val lastRound: Int?,
+            val level: Int?,
+            val tftSetNumber: Int?,
             val traits: List<TraitRes>,
             val units: List<Unit>,
             var augments: List<String>,
     )
 
     data class TraitRes(
-            val name: String? = null,
-            val numUnits: Int? = null,
-            val style: Int? = null,
-            val tierCurrent: Int? = null,
-            val tierTotal: Int? = null,
+            val name: String?,
+            val numUnits: Int?,
+            val style: Int?,
+            val tierCurrent: Int?,
+            val tierTotal: Int?,
 
             ) {
         companion object {
-            fun listOf(traits: List<Deck.Trait>): List<WinnersRes.TraitRes> {
+            fun listOf(traits: List<WinnerDeck.Trait>): List<WinnersRes.TraitRes> {
                 return traits.map {
                     TraitRes(
                             name = it.name,
@@ -54,7 +48,7 @@ data class WinnersRes(
             val tier: Int?,
     ) {
         companion object {
-            fun listOf(units: List<Deck.Unit>): List<WinnersRes.Unit> {
+            fun listOf(units: List<WinnerDeck.Unit>): List<WinnersRes.Unit> {
                 return units.map {
                     Unit(
                             items = it.items ?: emptyList(),
@@ -70,23 +64,19 @@ data class WinnersRes(
     }
 
     companion object {
-        fun of(decks: List<Deck>): WinnersRes {
+        fun of(winnerDecks: List<WinnerDeck>): WinnersRes {
             return WinnersRes(
-                    decks
+                    winnerDecks
                             .map {
                                 WinnerRes(
+                                        gameVersion = it.info.game_version,
                                         match_id = it.match_id,
                                         lastRound = it.last_round,
                                         level = it.level,
-                                        placement = it.placement,
-//                                                playersEliminated = it.info.
-//                                                puuid =
                                         tftSetNumber = it.info.tft_set_number,
-//                                        timeEliminated =
-//                                        totalDamageToPlayers = it.traits =
                                         traits = TraitRes.listOf(it.traits),
                                         units = Unit.listOf(it.units),
-                                        augments = it.augments
+                                        augments = it.augments,
                                 )
                             }
             )

@@ -3,7 +3,7 @@ package com.tft.guide.service
 import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.controller.response.*
 import com.tft.guide.entity.Champion
-import com.tft.guide.entity.Deck
+import com.tft.guide.entity.WinnerDeck
 import com.tft.guide.entity.Item
 import com.tft.guide.entity.Synergy
 import com.tft.guide.repository.*
@@ -31,8 +31,8 @@ class TFTService(
     }
 
     fun winners(winnersRequest: WinnersReq): WinnersRes {
-        val decks: List<Deck> = deckQueryRepository.findByCharacterId(1, winnersRequest)
-        return WinnersRes.of(decks)
+        val winnerDecks: List<WinnerDeck> = deckQueryRepository.findByCharacterId(winnersRequest)
+        return WinnersRes.of(winnerDecks)
     }
 
     fun items(season: String): ItemsRes {

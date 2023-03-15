@@ -7,8 +7,8 @@ import javax.persistence.Entity
 
 @Entity
 @QueryEntity
-@Document(collection = "deck")
-data class Deck(
+@Document(collection = "winnerDeck")
+data class WinnerDeck(
         @Id
         var _id: String? = null,
         var match_id: String = "",
@@ -16,7 +16,6 @@ data class Deck(
         var gold_left: Int? = null,
         var last_round: Int? = null,
         var level: Int? = null,
-        var placement: Int? = null,
         var traits: List<Trait> = emptyList(),
         var units: List<Unit> = emptyList(),
         var augments: List<String> = emptyList(),
@@ -27,6 +26,7 @@ data class Deck(
             var game_datetime: Long? = null,
             var game_length: Float? = null,
             var queue_id: Int? = null,
+            var game_version: String = "",
             var tft_game_type: GameType? = null,
             var tft_set_core_name: String? = null,
             var tft_set_number: Int? = null,
