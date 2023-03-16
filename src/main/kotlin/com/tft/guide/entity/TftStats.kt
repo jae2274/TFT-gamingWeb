@@ -20,18 +20,20 @@ data class TftStats(
         var _id: String? = null,
 ) {
     data class ChampionStats(
-            var totalPlacement: Long = 0,
-            var totalCount: Long = 0,
+            var totalPlacement: Long,
+            var totalCount: Long,
             val tiers: Map<Int, Stats> = mutableMapOf(),
             val items: Map<String, Stats> = mutableMapOf(),
     )
 
     data class SynergyStats(
+            var totalPlacement: Long,
+            var totalCount: Long,
             val tiers: Map<Int, Stats> = mutableMapOf(),
     )
 
     data class Stats(
-            var totalPlacement: Long = 0,
-            var totalCount: Long = 0,
+            var totalPlacement: Long,
+            var totalCount: Long,
     )
 }

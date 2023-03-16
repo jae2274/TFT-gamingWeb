@@ -1,13 +1,14 @@
 Vue.component('championImg', {
     // JavaScript는 camelCase
-    props: ['cost', 'imageUrl', 'traits'],
+    props: ['cost', 'imageUrl', 'traits', 'tooltipText'],
     computed: {
         costClass() {
             return 'cost-' + this.cost;
         },
-        tooltipText() {
-            return this.traits.join('&nbsp;&nbsp;');
-        },
+        // tooltipText() {
+        //     return this.traits.join('&nbsp;&nbsp;') + '<br/>'
+        //     this.tiers;
+        // },
         costText() {
             return '$' + this.cost;
         }
@@ -129,6 +130,7 @@ let app = new Vue({
         },
         winners: [],
         currentOffset: 0,
+        stats: {},
     },
     computed: {
         filteredAugments() {
@@ -149,19 +151,32 @@ let app = new Vue({
         const promistChampions = getChampions();
         const promiseItems = getItems();
         const promiseAugments = getAugments();
+        const promiseStats = getStats();
 
 
         const synergyRes = (await promiseSynergies);
         this.synergyObj.list = [...synergyRes.jobs, ...synergyRes.affiliations]
         this.championObj.list = (await promistChampions).champions;
         this.itemObj.list = (await promiseItems).items;
-
         this.augmentObj.list = (await promiseAugments).augments;
+        const statsMap = (await promiseStats)
 
         this.championObj.list.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
             this.championObj.mapById[champion.dataId] = champion;
+
+            const stats = statsMap.champions[champion.dataId];
+            if (stats) {
+                champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
+                    + getAvgPlacementByTiers(stats.tiers)
+                        .map(tier => `${tier[0]}: ${tier[1]}`)
+                        .join('<br/>')
+
+                champion.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
+            }
         })
+        this.championObj.list = this.championObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
+
         this.itemObj.list.forEach(item => {
             this.itemObj.mapById[item.dataId] = item;
         })
@@ -173,11 +188,27 @@ let app = new Vue({
         this.synergyObj.list.forEach(synergy => {
             this.synergyObj.mapById[synergy.dataId] = synergy;
             synergy.tier = 1;
+
+            const stats = statsMap.synergies[synergy.dataId];
+            if (stats) {
+                synergy.tooltipText = synergy.desc + '<br/><br/>평균등수<br/>'
+                    + getAvgPlacementByTiers(stats.tiers)
+                        .map(tier => `${tier[0]}: ${tier[1]}`)
+                        .join('<br/>')
+
+                synergy.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
+            }
         })
+        this.synergyObj.list = this.synergyObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
 
         this.augmentObj.list.forEach(augment => {
             this.augmentObj.mapById[augment.dataId] = augment;
+
+            const stats = statsMap.augments[augment.dataId];
+            if (stats)
+                augment.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
         })
+        this.augmentObj.list = this.augmentObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
 
         this.synergyObj.jobs = synergyRes.jobs;
         this.synergyObj.affiliations = synergyRes.affiliations;
@@ -287,6 +318,18 @@ let app = new Vue({
     }
 })
 
+function getAvgPlacementByTiers(tiers) {
+    return Object.entries(tiers)
+        .filter(value => value[0] != "0")
+        .sort((prev, next) => prev.key - next.key)
+        .map(entry => {
+            const [tier, stats] = entry;
+
+            return [tier, (stats.totalPlacement / stats.totalCount).toFixed(2)];
+        })
+}
+
+
 async function getSynergies() {
     let response = await fetch("/synergies?season=8");
     let json = await response.json();
@@ -322,6 +365,17 @@ async function getItems() {
 
 async function getAugments() {
     let response = await fetch("/augments?season=8");
+    let json = await response.json();
+
+    if (response.status == 200 && json.success)
+        return json.data;
+    else {
+        alert(json.message)
+    }
+}
+
+async function getStats() {
+    let response = await fetch("/stats?season=8");
     let json = await response.json();
 
     if (response.status == 200 && json.success)

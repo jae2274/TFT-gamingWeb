@@ -41,13 +41,15 @@ data class TftStatsRes(
                 return ChampionStatsRes(
                         totalPlacement = championStats.totalPlacement,
                         totalCount = championStats.totalCount,
-
-                        )
+                        tiers = StatsRes.mapIntOf(championStats.tiers)
+                )
             }
         }
     }
 
     data class SynergyStatsRes(
+            var totalPlacement: Long,
+            var totalCount: Long,
             val tiers: Map<Int, StatsRes>,
     ) {
         companion object {
@@ -57,7 +59,9 @@ data class TftStatsRes(
 
             fun of(synergy: TftStats.SynergyStats): SynergyStatsRes {
                 return SynergyStatsRes(
-                        tiers = StatsRes.mapIntOf(synergy.tiers)
+                        totalPlacement = synergy.totalPlacement,
+                        totalCount = synergy.totalCount,
+                        tiers = StatsRes.mapIntOf(synergy.tiers),
                 )
             }
         }
