@@ -18,6 +18,7 @@ class TFTService(
         private val deckQueryRepository: DeckQueryRepository,
         private val itemRepository: ItemRepository,
         private val augmentRepository: AugmentRepository,
+        private val tftStatsRepository: TFTStatsRepository,
 //        private val queryRepository: QueryRepository,
 ) {
     fun synergies(season: String): SynergiesRes {
@@ -38,6 +39,11 @@ class TFTService(
     fun items(season: String): ItemsRes {
         val items: List<Item> = itemRepository.findAllBySeason(season)
         return ItemsRes.of(items)
+    }
+
+    fun stats(season: String): TftStatsRes {
+        val tftStats = tftStatsRepository.findTopByOrderByGameVersionDesc()
+        return TftStatsRes.of(tftStats)
     }
 
     fun augments(season: String): AugmentsRes {

@@ -20,6 +20,7 @@ class TFTController(
         const val GET_CHAMPIONS: String = "/champions"
         const val GET_ITEMS: String = "/items"
         const val GET_AUGMENTS: String = "/augments"
+        const val GET_STATS: String = "/stats"
         const val POST_WINNERS: String = "/winners"
     }
 
@@ -58,6 +59,15 @@ class TFTController(
         return tftService.augments(season)
                 .let { CommonResponse.successOf(it) }
     }
+
+    @GetMapping(Url.GET_STATS)
+    fun stats(
+            @RequestParam(QueryParam.SEASON) season: String
+    ): CommonResponse<TftStatsRes> {
+        return tftService.stats(season)
+                .let { CommonResponse.successOf(it) }
+    }
+
 
     @PostMapping(Url.POST_WINNERS)
     fun winners(@RequestBody winnersRequest: WinnersReq): CommonResponse<WinnersRes> {

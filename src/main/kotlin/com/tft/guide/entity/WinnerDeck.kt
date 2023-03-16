@@ -3,6 +3,7 @@ package com.tft.guide.entity
 import com.querydsl.core.annotations.QueryEntity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.LocalDateTime
 import javax.persistence.Entity
 
 @Entity
@@ -19,6 +20,7 @@ data class WinnerDeck(
         var traits: List<Trait> = emptyList(),
         var units: List<Unit> = emptyList(),
         var augments: List<String> = emptyList(),
+        var createdAt: LocalDateTime,
 ) {
     @Entity
     @QueryEntity
