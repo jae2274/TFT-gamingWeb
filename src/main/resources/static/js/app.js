@@ -132,6 +132,7 @@ let app = new Vue({
         winners: [],
         currentOffset: 0,
         stats: {},
+        statsMap: {},
     },
     computed: {
         filteredAugments() {
@@ -160,7 +161,9 @@ let app = new Vue({
         this.championObj.list = (await promistChampions).champions;
         this.itemObj.list = (await promiseItems).items;
         this.augmentObj.list = (await promiseAugments).augments;
-        const statsMap = (await promiseStats)
+        this.statsMap = (await promiseStats)
+
+        const statsMap = this.statsMap;
 
         this.championObj.list.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
@@ -310,6 +313,8 @@ let app = new Vue({
                                 const items = unit.itemNames.map(itemName => this.itemObj.mapById[itemName])
                                 champion.items = items;
                                 champion.isSelected = false;
+
+                                const stats = this.statsMap.champions[champion.dataId];
                                 champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
                                     + getAvgPlacementByTiers(stats.tiers)
                                         .map(tier => `${tier[0]}: ${tier[1]}`)
