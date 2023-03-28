@@ -75,6 +75,7 @@ Vue.component('winnerTemplate', {
                                     v-bind:cost="champion.cost"
                                     v-bind:image-url="champion.imageUrl"
                                     v-bind:traits="champion.traits"
+                                            v-bind:tooltip-text="champion.tooltipText"
                                     v-on:click.native="addChampions(champion.dataId)"
                             />
                         </div>
@@ -170,7 +171,7 @@ let app = new Vue({
                 champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
                     + getAvgPlacementByTiers(stats.tiers)
                         .map(tier => `${tier[0]}: ${tier[1]}`)
-                        .join('<br/>')
+                        .join('<br/>');
 
                 champion.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
             }
@@ -309,6 +310,10 @@ let app = new Vue({
                                 const items = unit.itemNames.map(itemName => this.itemObj.mapById[itemName])
                                 champion.items = items;
                                 champion.isSelected = false;
+                                champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
+                                    + getAvgPlacementByTiers(stats.tiers)
+                                        .map(tier => `${tier[0]}: ${tier[1]}`)
+                                        .join('<br/>');
 
                                 return champion;
                             })
@@ -331,7 +336,7 @@ function getAvgPlacementByTiers(tiers) {
 
 
 async function getSynergies() {
-    let response = await fetch("/synergies?season=8");
+    let response = await fetch("/synergies?season=8.5");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -342,7 +347,7 @@ async function getSynergies() {
 }
 
 async function getChampions() {
-    let response = await fetch("/champions?season=8");
+    let response = await fetch("/champions?season=8.5");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -353,7 +358,7 @@ async function getChampions() {
 }
 
 async function getItems() {
-    let response = await fetch("/items?season=8");
+    let response = await fetch("/items?season=8.5");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -364,7 +369,7 @@ async function getItems() {
 }
 
 async function getAugments() {
-    let response = await fetch("/augments?season=8");
+    let response = await fetch("/augments?season=8.5");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
