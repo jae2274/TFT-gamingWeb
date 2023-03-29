@@ -315,10 +315,10 @@ let app = new Vue({
                                 champion.isSelected = false;
 
                                 const stats = this.statsMap.champions[champion.dataId];
-                                champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
-                                    + getAvgPlacementByTiers(stats.tiers)
-                                        .map(tier => `${tier[0]}: ${tier[1]}`)
-                                        .join('<br/>');
+                                // champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
+                                //     + getAvgPlacementByTiers(stats.tiers)
+                                //         .map(tier => `${tier[0]}: ${tier[1]}`)
+                                //         .join('<br/>');
 
                                 return champion;
                             })
