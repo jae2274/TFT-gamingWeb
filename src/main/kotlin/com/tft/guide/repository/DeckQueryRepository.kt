@@ -13,44 +13,17 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class DeckQueryRepository(
-        val winnerDeckRepository: WinnerDeckRepository,
         val mongoTemplate: MongoTemplate,
 ) {
-    fun findByCharacterId(request: WinnersReq): List<WinnerDeck> {
-        val springDataMongodbQuery = SpringDataMongodbQuery(mongoTemplate, WinnerDeck::class.java)
+    fun findWinnerDecks(request: WinnersReq): List<WinnerDeck> {
+        var mongoDBQuery = SpringDataMongodbQuery(mongoTemplate, WinnerDeck::class.java)
 
-        var mongoDBQuery = springDataMongodbQuery
+        mongoDBQuery = buildChampionsQuery(mongoDBQuery, request.champions)
+                .let { buildItemsQuery(it, request.items) }
+                .let { buildSynergiesQuery(it, request.synergies) }
 
-        for (champion in request.champions) {
-            mongoDBQuery = mongoDBQuery
-                    .anyEmbedded(QWinnerDeck.winnerDeck.units, QWinnerDeck_Unit.unit)
-                    .on(
-                            QWinnerDeck_Unit.unit.character_id.eq(champion.dataId)
-                                    .and(QWinnerDeck_Unit.unit.tier.goe(champion.tier))
-                                    .and(
-                                            champion.itemCount.takeIf { it > 0 }
-                                                    ?.let { QWinnerDeck_Unit.unit.itemNames[it - 1].isNotNull }
-                                                    ?: null
-                                    )
-                    )
-        }
 
-        for (item in request.items) {
-            mongoDBQuery = mongoDBQuery
-                    .anyEmbedded(QWinnerDeck.winnerDeck.units, QWinnerDeck_Unit.unit)
-                    .on(QWinnerDeck_Unit.unit.itemNames.any().eq(item.dataId))
-        }
-
-        for (synergy in request.synergies) {
-            mongoDBQuery = mongoDBQuery
-                    .anyEmbedded(QWinnerDeck.winnerDeck.traits, QWinnerDeck_Trait.trait)
-                    .on(
-                            QWinnerDeck_Trait.trait.name.eq(synergy.dataId)
-                                    .and(QWinnerDeck_Trait.trait.tier_current.goe(synergy.tier))
-                    )
-        }
-
-        val conditionForAugment = request.augments.fold(BooleanBuilder()) { where, augmentReq -> where.and(QWinnerDeck.winnerDeck.augments.any().eq(augmentReq.dataId)) }
+        val conditionForAugment = buildAugmentsBooleanBuilder(request.augments)
 
         return mongoDBQuery
                 .where(
@@ -61,5 +34,44 @@ class DeckQueryRepository(
                 .limit(request.size)
                 .orderBy(QWinnerDeck.winnerDeck.info.game_datetime.desc())
                 .fetch()
+    }
+
+    private fun buildChampionsQuery(mongoDBQuery: SpringDataMongodbQuery<WinnerDeck>, championReqs: List<WinnersReq.ChampionReq>): SpringDataMongodbQuery<WinnerDeck> {
+        return championReqs.fold(mongoDBQuery) { championMongoDBQuery, championReq ->
+            championMongoDBQuery
+                    .anyEmbedded(QWinnerDeck.winnerDeck.units, QWinnerDeck_Unit.unit)
+                    .on(
+                            QWinnerDeck_Unit.unit.character_id.eq(championReq.dataId)
+                                    .and(QWinnerDeck_Unit.unit.tier.goe(championReq.tier))
+                                    .and(
+                                            championReq.itemCount.takeIf { it > 0 }
+                                                    ?.let { QWinnerDeck_Unit.unit.itemNames[it - 1].isNotNull }
+                                                    ?: null
+                                    )
+                    )
+        }
+    }
+
+    private fun buildItemsQuery(mongoDBQuery: SpringDataMongodbQuery<WinnerDeck>, itemReqs: List<WinnersReq.ItemReq>): SpringDataMongodbQuery<WinnerDeck> {
+        return itemReqs.fold(mongoDBQuery) { itemMongoDBQuery, itemReq ->
+            itemMongoDBQuery
+                    .anyEmbedded(QWinnerDeck.winnerDeck.units, QWinnerDeck_Unit.unit)
+                    .on(QWinnerDeck_Unit.unit.itemNames.any().eq(itemReq.dataId))
+        }
+    }
+
+    private fun buildSynergiesQuery(mongoDBQuery: SpringDataMongodbQuery<WinnerDeck>, synergyReqs: List<WinnersReq.SynergyReq>): SpringDataMongodbQuery<WinnerDeck> {
+        return synergyReqs.fold(mongoDBQuery) { synergyMongoDBQuery, synergyReq ->
+            synergyMongoDBQuery
+                    .anyEmbedded(QWinnerDeck.winnerDeck.traits, QWinnerDeck_Trait.trait)
+                    .on(
+                            QWinnerDeck_Trait.trait.name.eq(synergyReq.dataId)
+                                    .and(QWinnerDeck_Trait.trait.tier_current.goe(synergyReq.tier))
+                    )
+        }
+    }
+
+    private fun buildAugmentsBooleanBuilder(augmentReqs: List<WinnersReq.AugmentReq>): BooleanBuilder {
+        return augmentReqs.fold(BooleanBuilder()) { where, augmentReq -> where.and(QWinnerDeck.winnerDeck.augments.any().eq(augmentReq.dataId)) }
     }
 }

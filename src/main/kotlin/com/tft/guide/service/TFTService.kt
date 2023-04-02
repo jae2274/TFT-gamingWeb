@@ -32,7 +32,7 @@ class TFTService(
     }
 
     fun winners(winnersRequest: WinnersReq): WinnersRes {
-        val winnerDecks: List<WinnerDeck> = deckQueryRepository.findByCharacterId(winnersRequest)
+        val winnerDecks: List<WinnerDeck> = deckQueryRepository.findWinnerDecks(winnersRequest)
         return WinnersRes.of(winnerDecks)
     }
 
