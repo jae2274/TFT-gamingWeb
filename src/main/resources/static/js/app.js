@@ -165,21 +165,6 @@ let app = new Vue({
 
         const statsMap = this.statsMap;
 
-        this.championObj.list.forEach(champion => {
-            champion.traits = champion.traits.map(trait => trait.toLowerCase());
-            this.championObj.mapById[champion.dataId] = champion;
-
-            const stats = statsMap.champions[champion.dataId];
-            if (stats) {
-                champion.tooltipText = champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
-                    + getAvgPlacementByTiers(stats.tiers)
-                        .map(tier => `${tier[0]}: ${tier[1]}`)
-                        .join('<br/>');
-
-                champion.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
-            }
-        })
-        this.championObj.list = this.championObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
 
         this.itemObj.list.forEach(item => {
             this.itemObj.mapById[item.dataId] = item;
@@ -189,6 +174,27 @@ let app = new Vue({
             this.itemObj.mapByName[item.name] = item;
         })
 
+        this.championObj.list.forEach(champion => {
+            champion.traits = champion.traits.map(trait => trait.toLowerCase());
+            this.championObj.mapById[champion.dataId] = champion;
+
+            const stats = statsMap.champions[champion.dataId];
+            if (stats) {
+                champion.tooltipText =
+                    `${champion.name}<br/>` +
+                    champion.traits.join('&nbsp;&nbsp;') + '<br/><br/>평균등수<br/>'
+                    + getAvgPlacementByTiers(stats.tiers)
+                    + "<br/>"
+                    + getTootipForChampionItems(stats.itemsSortedByCount, this.itemObj.mapById)
+                // + "<br/>"
+                // + getTootipForChampionItems(stats.itemsSortedByPlacement, this.itemObj.mapById)
+
+                champion.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
+            }
+        })
+        this.championObj.list = this.championObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
+
+
         this.synergyObj.list.forEach(synergy => {
             this.synergyObj.mapById[synergy.dataId] = synergy;
             synergy.tier = 1;
@@ -197,8 +203,6 @@ let app = new Vue({
             if (stats) {
                 synergy.tooltipText = synergy.desc + '<br/><br/>평균등수<br/>'
                     + getAvgPlacementByTiers(stats.tiers)
-                        .map(tier => `${tier[0]}: ${tier[1]}`)
-                        .join('<br/>')
 
                 synergy.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
             }
@@ -329,14 +333,31 @@ let app = new Vue({
 })
 
 function getAvgPlacementByTiers(tiers) {
-    return Object.entries(tiers)
-        .filter(value => value[0] != "0")
+    return tiers
+        .filter(value => value.key != 0)
         .sort((prev, next) => prev.key - next.key)
-        .map(entry => {
-            const [tier, stats] = entry;
+        .map(value => {
 
-            return [tier, (stats.totalPlacement / stats.totalCount).toFixed(2)];
+            return [value.key, (value.totalPlacement / value.totalCount).toFixed(2)];
         })
+        .map(tier => `${tier[0]}: ${tier[1]}`)
+        .join('<br/>')
+}
+
+function getTootipForChampionItems(items, itemMapById) {
+    return items
+        .filter(value => itemMapById[value.key])
+        .map(value => {
+            const imageUrl = itemMapById[value.key].imageUrl
+            return `
+                    <div>
+                    <img src="${imageUrl}" style="height: 30px;">
+                    <span>${(value.totalPlacement / value.totalCount).toFixed(2)}</span>
+                    <span>${value.totalCount}</span>
+                    </div>
+        `
+        })
+        .join("")
 }
 
 
