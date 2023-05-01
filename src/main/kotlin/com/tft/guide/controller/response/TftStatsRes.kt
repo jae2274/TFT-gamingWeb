@@ -39,18 +39,20 @@ data class TftStatsRes(
                 return champions.entries.associateBy({ it.key }, { ChampionStatsRes.of(it.value) })
             }
 
-            fun of(championStats: TftStats.ChampionStats): ChampionStatsRes {
+            fun of(stats: TftStats.ChampionStats): ChampionStatsRes {
+                val subTotalCount = stats.items.entries.map { it.value.totalCount }
+                    .fold(0L) { prevCount, nextCount -> prevCount + nextCount }
 
-                val championItemStatsByCount = championStats.items.entries
-                    .sortedByDescending { it.value.totalCount }
+                val championItemStatsByCount = stats.items.entries
                     .filter { (it.value.totalPlacement / it.value.totalCount.toFloat()) < 4.5 }
-                    .take(10)
+                    .filter { (it.value.totalCount.toFloat() / subTotalCount) > 0.01 }
                     .sortedBy { it.value.totalPlacement / it.value.totalCount.toFloat() }
+                    .take(10)
 
                 return ChampionStatsRes(
-                    totalPlacement = championStats.totalPlacement,
-                    totalCount = championStats.totalCount,
-                    tiers = StatsRes.listOf(championStats.tiers.toSortedMap()),
+                    totalPlacement = stats.totalPlacement,
+                    totalCount = stats.totalCount,
+                    tiers = StatsRes.listOf(stats.tiers.toSortedMap()),
                     itemsSortedByCount = StatsRes.listOf(championItemStatsByCount),
                 )
             }
@@ -67,17 +69,19 @@ data class TftStatsRes(
                 return items.entries.associateBy({ it.key }, { of(it.value) })
             }
 
-            fun of(itemStats: TftStats.ItemStats): ItemStatsRes {
+            fun of(stats: TftStats.ItemStats): ItemStatsRes {
+                val subTotalCount = stats.champions.entries.map { it.value.totalCount }
+                    .fold(0L) { prevCount, nextCount -> prevCount + nextCount }
 
-                val itemChampionStatsByCount = itemStats.champions.entries
-                    .sortedByDescending { it.value.totalCount }
+                val itemChampionStatsByCount = stats.champions.entries
                     .filter { (it.value.totalPlacement / it.value.totalCount.toFloat()) < 4.5 }
-                    .take(10)
+                    .filter { (it.value.totalCount.toFloat() / subTotalCount) > 0.01 }
                     .sortedBy { it.value.totalPlacement / it.value.totalCount.toFloat() }
+                    .take(10)
 
                 return ItemStatsRes(
-                    totalPlacement = itemStats.totalPlacement,
-                    totalCount = itemStats.totalCount,
+                    totalPlacement = stats.totalPlacement,
+                    totalCount = stats.totalCount,
                     championsSortedByCount = StatsRes.listOf(itemChampionStatsByCount),
                 )
             }
