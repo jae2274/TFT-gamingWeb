@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("aws")
+@ActiveProfiles("local")
 class TFTControllerTest(
         @Autowired
         private val mockMvc: MockMvc

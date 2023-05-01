@@ -176,9 +176,8 @@
                                  style="width: 290px;overflow-y: scroll;color: white;font-size: 15px;">
                                 <div class="item" v-for="item in itemObj.list" style="height: 30px;"
                                      v-on:click="addItems(item.dataId)"
-                                     v-tooltip="{content:`${item.itemEffect}<br/>${item.itemSpec}`}">
+                                     v-tooltip="item.tooltipText">
                                     <img v-bind:src="item.imageUrl" style="height: 100%;">
-
                                     {{item.name}}
                                     <div style="height: 100%;float: right;display: flex;width: 22%;">
                                         <div style="height: 100%;" v-for="childItemName in item.childItems"
@@ -192,30 +191,39 @@
                             </div>
                             <div style="position: relative">
                                 <div style="position: absolute;bottom: 25px;margin:5px;background-color: rgba(0, 0, 0, 0.5);">
-                                    <div v-for="(target,index) in filteredItems" class="targets"
-                                         style="position: relative;display: inline-block;">
-                                        <div v-bind:class="`tft-item tft-item--42 cost-`+target.cost"
-                                             style="display: inline-block;"
-                                             v-on:click="addItems(target.dataId)"
-                                             v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
-                                            <img v-bind:src="target.imageUrl" alt=""
-                                                 style="float: left;display:inline-block;height: 100%;">
-                                        </div>
-                                    </div>
+                                    <item-img v-for="item in filteredItems"
+                                              v-bind:image-url="item.imageUrl"
+                                              v-bind:tooltip-text="item.tooltipText"
+                                              v-on:click.native="addItems(item.dataId)"
+                                    />
+                                    <!--                                    <div v-for="(target,index) in filteredItems" class="targets"-->
+                                    <!--                                         style="position: relative;display: inline-block;">-->
+                                    <!--                                        <div class="tft-item tft-item&#45;&#45;42"-->
+                                    <!--                                             style="display: inline-block;"-->
+                                    <!--                                             v-on:click="addItems(target.dataId)"-->
+                                    <!--                                             v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">-->
+                                    <!--                                            <img v-bind:src="target.imageUrl" alt=""-->
+                                    <!--                                                 style="float: left;display:inline-block;height: 100%;">-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </div>-->
                                 </div>
                                 <input type="text" v-model="itemObj.searchWord">
                             </div>
                             <div style="height: 40px;">
-                                <div v-for="(target,index) in itemObj.requests" class="targets"
-                                     style="position: relative;display: inline-block;">
-                                    <div v-bind:class="`search-item tft-item tft-item--42 cost-`+target.cost" style="
-                                    display: inline-block;
-                                " v-on:click="removeItem(index)"
-                                         v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">
-                                        <img v-bind:src="target.imageUrl" alt=""
-                                             style="float: left;display:inline-block;height: 100%;">
-                                    </div>
-                                </div>
+                                <item-img v-for="(item,index) in itemObj.requests"
+                                          v-bind:image-url="item.imageUrl"
+                                          v-bind:tooltip-text="item.tooltipText"
+                                          v-on:click.native="removeItem(index)"
+                                />
+                                <!--                                <div v-for="(target,index) in itemObj.requests" class="targets"style="position: relative;display: inline-block;">                                    -->
+                                <!--                                    <div class="search-item tft-item tft-item&#45;&#45;42" style="-->
+                                <!--                                    display: inline-block;-->
+                                <!--                                " v-on:click="removeItem(index)"-->
+                                <!--                                         v-tooltip="{content:`${target.itemEffect}<br/>${target.itemSpec}`}">-->
+                                <!--                                        <img v-bind:src="target.imageUrl" alt=""-->
+                                <!--                                             style="float: left;display:inline-block;height: 100%;">-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
                             </div>
                         </div>
                     </div>

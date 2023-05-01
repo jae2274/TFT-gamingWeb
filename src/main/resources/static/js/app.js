@@ -5,10 +5,6 @@ Vue.component('championImg', {
         costClass() {
             return 'cost-' + this.cost;
         },
-        // tooltipText() {
-        //     return this.traits.join('&nbsp;&nbsp;') + '<br/>'
-        //     this.tiers;
-        // },
         costText() {
             return '$' + this.cost;
         }
@@ -18,6 +14,20 @@ Vue.component('championImg', {
     <div class="tft-champion tft-champion--42" :class="costClass" v-tooltip="tooltipText">
       <img :src="imageUrl">
       <span class="cost">{{costText}}</span>
+    </div>
+    `
+})
+
+Vue.component('itemImg', {
+    props: ['imageUrl', 'tooltipText'],
+    computed: {},
+    template: `
+    <div class="targets"style="position: relative;display: inline-block;">
+        <div class="search-item tft-item tft-item--42" style="display: inline-block;"
+        v-tooltip="tooltipText">
+            <img v-bind:src="imageUrl" alt=""
+                 style="float: left;display:inline-block;height: 100%;">
+        </div>
     </div>
     `
 })
@@ -166,18 +176,17 @@ let app = new Vue({
         const statsMap = this.statsMap;
 
 
-        this.itemObj.list.forEach(item => {
-            this.itemObj.mapById[item.dataId] = item;
-        })
-
-        this.itemObj.list.forEach(item => {
-            this.itemObj.mapByName[item.name] = item;
-        })
-
         this.championObj.list.forEach(champion => {
             champion.traits = champion.traits.map(trait => trait.toLowerCase());
             this.championObj.mapById[champion.dataId] = champion;
+        });
+        this.itemObj.list.forEach(item => {
+            this.itemObj.mapById[item.dataId] = item;
+            this.itemObj.mapByName[item.name] = item;
+        });
 
+
+        this.championObj.list.forEach(champion => {
             const stats = statsMap.champions[champion.dataId];
             if (stats) {
                 champion.tooltipText =
@@ -191,7 +200,19 @@ let app = new Vue({
 
                 champion.averagePlacement = (stats.totalPlacement / stats.totalCount).toFixed(2);
             }
-        })
+        });
+        this.itemObj.list.forEach(item => {
+            const stats = statsMap.items[item.dataId];
+            if (stats) {
+                item.tooltipText =
+                    `${item.name}<br/>` +
+                    `평균등수: ${(stats.totalPlacement / stats.totalCount).toFixed(2)}<br/>`
+                    + "<br/>"
+                    + getTootipForChampionItems(stats.championsSortedByCount, this.championObj.mapById)
+            }
+        });
+
+
         this.championObj.list = this.championObj.list.sort((prev, next) => prev.averagePlacement - next.averagePlacement)
 
 
@@ -264,7 +285,6 @@ let app = new Vue({
                 this.synergyObj.requests = [...this.synergyObj.requests, this.synergyObj.mapById[dataId]];
         },
         removeChampion(index) {
-
             this.championObj.requests = [...this.championObj.requests.slice(0, index), ...this.championObj.requests.slice(index + 1, this.championObj.requests.length)]
         },
         removeItem(index) {

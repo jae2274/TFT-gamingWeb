@@ -8,6 +8,7 @@ data class TftStatsRes(
     val season: String,
     val seasonNumber: Int,
     val champions: Map<String, ChampionStatsRes>,
+    val items: Map<String, ItemStatsRes>,
     val synergies: Map<String, SynergyStatsRes>,
     val augments: List<StatsRes<String>>,
     val createdAt: LocalDateTime,
@@ -19,6 +20,7 @@ data class TftStatsRes(
                 season = tftStats.season,
                 seasonNumber = tftStats.seasonNumber,
                 champions = ChampionStatsRes.mapOf(tftStats.champions),
+                items = ItemStatsRes.mapOf(tftStats.items),
                 synergies = SynergyStatsRes.mapOf(tftStats.synergies),
                 augments = StatsRes.listOf(tftStats.augments),
                 createdAt = tftStats.createdAt,
@@ -30,7 +32,6 @@ data class TftStatsRes(
         var totalPlacement: Long = 0,
         var totalCount: Long = 0,
         val tiers: List<StatsRes<Int>> = mutableListOf(),
-        val itemsSortedByPlacement: List<StatsRes<String>> = mutableListOf(),
         val itemsSortedByCount: List<StatsRes<String>> = mutableListOf(),
     ) {
         companion object {
@@ -39,14 +40,7 @@ data class TftStatsRes(
             }
 
             fun of(championStats: TftStats.ChampionStats): ChampionStatsRes {
-//                val championItemStatsByPlacement = championStats.items.entries
-//                    .sortedWith(
-//                        compareBy(
-//                            { (it.value.totalPlacement / it.value.totalCount.toFloat()) },
-//                            { -it.value.totalCount }
-//                        )
-//                    )
-//                    .take(10)
+
                 val championItemStatsByCount = championStats.items.entries
                     .sortedByDescending { it.value.totalCount }
                     .filter { (it.value.totalPlacement / it.value.totalCount.toFloat()) < 4.5 }
@@ -57,8 +51,34 @@ data class TftStatsRes(
                     totalPlacement = championStats.totalPlacement,
                     totalCount = championStats.totalCount,
                     tiers = StatsRes.listOf(championStats.tiers.toSortedMap()),
-//                    itemsSortedByPlacement = StatsRes.listOf(championItemStatsByPlacement),
                     itemsSortedByCount = StatsRes.listOf(championItemStatsByCount),
+                )
+            }
+        }
+    }
+
+    data class ItemStatsRes(
+        var totalPlacement: Long = 0,
+        var totalCount: Long = 0,
+        val championsSortedByCount: List<StatsRes<String>> = mutableListOf(),
+    ) {
+        companion object {
+            fun mapOf(items: Map<String, TftStats.ItemStats>): Map<String, ItemStatsRes> {
+                return items.entries.associateBy({ it.key }, { of(it.value) })
+            }
+
+            fun of(itemStats: TftStats.ItemStats): ItemStatsRes {
+
+                val itemChampionStatsByCount = itemStats.champions.entries
+                    .sortedByDescending { it.value.totalCount }
+                    .filter { (it.value.totalPlacement / it.value.totalCount.toFloat()) < 4.5 }
+                    .take(10)
+                    .sortedBy { it.value.totalPlacement / it.value.totalCount.toFloat() }
+
+                return ItemStatsRes(
+                    totalPlacement = itemStats.totalPlacement,
+                    totalCount = itemStats.totalCount,
+                    championsSortedByCount = StatsRes.listOf(itemChampionStatsByCount),
                 )
             }
         }
