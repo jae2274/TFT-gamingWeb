@@ -42,7 +42,7 @@ class TFTService(
     }
 
     fun stats(season: String): TftStatsRes {
-        val tftStats = tftStatsRepository.findTopByOrderByGameVersionDesc()
+        val tftStats = tftStatsRepository.findTopBySeasonNumberOrderByCreatedAtDesc(season.toInt())
         return TftStatsRes.of(tftStats)
     }
 

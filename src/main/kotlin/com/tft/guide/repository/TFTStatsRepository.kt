@@ -6,4 +6,5 @@ import org.springframework.data.mongodb.repository.Query
 
 interface TFTStatsRepository : MongoRepository<TftStats, String> {
     fun findTopByOrderByGameVersionDesc(): TftStats
+    fun findTopBySeasonNumberOrderByCreatedAtDesc(seasonNumber: Int):TftStats
 }

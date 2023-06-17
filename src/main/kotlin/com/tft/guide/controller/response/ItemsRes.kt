@@ -14,7 +14,7 @@ data class ItemsRes(
             var imageUrl: String,
             var childItems: List<String> = listOf(),
             var season: String,
-            var dataId: String,
+            var dataId: String?,
     ) {
         companion object {
             fun listOf(items: List<Item>): List<ItemRes> {

@@ -16,7 +16,7 @@ data class Item(
         val season: String,
         override val engName: String,
         val engName2: String,
-        override var dataId: String,
+        override var dataId: String?,
         override var isFixed: Boolean,
         override var similarity: Double?,
 ) : TFTData

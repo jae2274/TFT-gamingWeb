@@ -18,6 +18,6 @@ data class Augment(
         val imageUrl: String,
         override val isFixed: Boolean,
         override val engName: String,
-        override val dataId: String,
+        override val dataId: String?,
         override val similarity: Double?,
 ) : TFTData

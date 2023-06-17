@@ -382,7 +382,7 @@ function getTootipForChampionItems(items, itemMapById) {
 
 
 async function getSynergies() {
-    let response = await fetch("/synergies?season=8.5");
+    let response = await fetch("/synergies?season=9");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -393,7 +393,7 @@ async function getSynergies() {
 }
 
 async function getChampions() {
-    let response = await fetch("/champions?season=8.5");
+    let response = await fetch("/champions?season=9");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -404,7 +404,7 @@ async function getChampions() {
 }
 
 async function getItems() {
-    let response = await fetch("/items?season=8.5");
+    let response = await fetch("/items?season=9");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -415,7 +415,7 @@ async function getItems() {
 }
 
 async function getAugments() {
-    let response = await fetch("/augments?season=8.5");
+    let response = await fetch("/augments?season=9");
     let json = await response.json();
 
     if (response.status == 200 && json.success)
@@ -426,7 +426,7 @@ async function getAugments() {
 }
 
 async function getStats() {
-    let response = await fetch("/stats?season=8");
+    let response = await fetch("/stats?season=9");
     let json = await response.json();
 
     if (response.status == 200 && json.success)

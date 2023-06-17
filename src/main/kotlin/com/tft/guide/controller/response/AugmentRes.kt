@@ -22,7 +22,7 @@ data class AugmentsRes(
             val desc: String,
             val imageUrl: String,
             val engName: String,
-            val dataId: String,
+            val dataId: String?,
     ) {
         companion object {
             fun listOf(augments: List<Augment>): List<AugmentRes> {
