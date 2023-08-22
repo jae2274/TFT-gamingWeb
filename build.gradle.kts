@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.springframework.boot") version "2.7.5"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     kotlin("jvm") version "1.6.21"
@@ -12,7 +13,7 @@ plugins {
 
 group = "com.tft"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_18
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -29,13 +30,8 @@ extra["springCloudVersion"] = "2021.0.4"
 
 dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
-    implementation("org.jsoup:jsoup:1.15.3")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
-    implementation("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -43,16 +39,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    testImplementation("org.springframework.batch:spring-batch-test")
-
-    implementation("net.gpedro.integrations.slack:slack-webhook:1.4.0")
-
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("com.querydsl:querydsl-mongodb:5.0.0") {
         exclude("org.mongodb", "mongo-java-driver")
     }
-    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
 
     implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3")
 
@@ -60,14 +50,21 @@ dependencies {
     implementation("com.h2database:h2")
     kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
 
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
 
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+// https://mvnrepository.com/artifact/com.amazonaws.serverless/aws-serverless-java-container-springboot2
+    implementation("com.amazonaws.serverless:aws-serverless-java-container-springboot2:1.9.3")
+
+//    // Spring Cloud Function 을 위한 의존성
+//    implementation("org.springframework.cloud:spring-cloud-function-adapter-aws")
+//    implementation("org.springframework.cloud:spring-cloud-function-kotlin")
+//    implementation("org.springframework.cloud:spring-cloud-starter-function-web")
+//
+//    // https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core
+//    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
+//    // https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-events
+//    implementation("com.amazonaws:aws-lambda-java-events:3.11.2")
 }
 
 
@@ -83,12 +80,31 @@ tasks.withType<Jar> { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xjvm-default=all")
-        jvmTarget = "18"
+        jvmTarget = "17"
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.assemble {
+    dependsOn("shadowJar")
+}
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    archiveFileName.set("batch.jar")
+    dependencies {
+        exclude("org.springframework.cloud:spring-cloud-function-web")
+    }
+    mergeServiceFiles()
+    append("META-INF/spring.handlers")
+    append("META-INF/spring.schemas")
+    append("META-INF/spring.tooling")
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer::class.java) {
+        paths.add("META-INF/spring.factories")
+        mergeStrategy = "append"
+    }
 }
 
 kapt {

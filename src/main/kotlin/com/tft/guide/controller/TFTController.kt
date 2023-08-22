@@ -67,11 +67,4 @@ class TFTController(
         return tftService.stats(season)
                 .let { CommonResponse.successOf(it) }
     }
-
-
-    @PostMapping(Url.POST_WINNERS)
-    fun winners(@RequestBody winnersRequest: WinnersReq): CommonResponse<WinnersRes> {
-        return tftService.winners(winnersRequest)
-                .let { CommonResponse.successOf(it) }
-    }
 }
