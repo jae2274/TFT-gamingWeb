@@ -4,9 +4,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.springframework.boot") version "2.7.5"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.spring") version "1.6.21"
-    kotlin("kapt") version "1.6.21"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.spring") version "1.8.21"
+    kotlin("kapt") version "1.8.21"
 }
 
 
@@ -40,31 +40,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    implementation("com.querydsl:querydsl-mongodb:5.0.0") {
-        exclude("org.mongodb", "mongo-java-driver")
-    }
+    implementation("org.litote.kmongo:kmongo:4.9.0")
 
     implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3")
 
-
-    implementation("com.h2database:h2")
-    kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-
-// https://mvnrepository.com/artifact/com.amazonaws.serverless/aws-serverless-java-container-springboot2
     implementation("com.amazonaws.serverless:aws-serverless-java-container-springboot2:1.9.3")
-
-//    // Spring Cloud Function 을 위한 의존성
-//    implementation("org.springframework.cloud:spring-cloud-function-adapter-aws")
-//    implementation("org.springframework.cloud:spring-cloud-function-kotlin")
-//    implementation("org.springframework.cloud:spring-cloud-starter-function-web")
-//
-//    // https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core
-//    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
-//    // https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-events
-//    implementation("com.amazonaws:aws-lambda-java-events:3.11.2")
 }
 
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class TFTController(
-        private val tftService: TFTService
+    private val tftService: TFTService
 ) {
     object Url {
         const val GET_SYNERGIES: String = "/synergies"
@@ -30,41 +30,47 @@ class TFTController(
 
     @GetMapping(Url.GET_SYNERGIES)
     fun synergies(
-            @RequestParam(QueryParam.SEASON) season: String
+        @RequestParam(QueryParam.SEASON) season: String
     ): CommonResponse<SynergiesRes> {
         return tftService.synergies(season)
-                .let { CommonResponse.successOf(it) }
+            .let { CommonResponse.successOf(it) }
     }
 
     @GetMapping(Url.GET_CHAMPIONS)
     fun champions(
-            @RequestParam(QueryParam.SEASON) season: String
+        @RequestParam(QueryParam.SEASON) season: String
     ): CommonResponse<ChampionsRes> {
         return tftService.champions(season)
-                .let { CommonResponse.successOf(it) }
+            .let { CommonResponse.successOf(it) }
     }
 
     @GetMapping(Url.GET_ITEMS)
     fun items(
-            @RequestParam(QueryParam.SEASON) season: String
+        @RequestParam(QueryParam.SEASON) season: String
     ): CommonResponse<ItemsRes> {
         return tftService.items(season)
-                .let { CommonResponse.successOf(it) }
+            .let { CommonResponse.successOf(it) }
     }
 
     @GetMapping(Url.GET_AUGMENTS)
     fun augments(
-            @RequestParam(QueryParam.SEASON) season: String
+        @RequestParam(QueryParam.SEASON) season: String
     ): CommonResponse<AugmentsRes> {
         return tftService.augments(season)
-                .let { CommonResponse.successOf(it) }
+            .let { CommonResponse.successOf(it) }
     }
 
     @GetMapping(Url.GET_STATS)
     fun stats(
-            @RequestParam(QueryParam.SEASON) season: String
+        @RequestParam(QueryParam.SEASON) season: String
     ): CommonResponse<TftStatsRes> {
         return tftService.stats(season)
-                .let { CommonResponse.successOf(it) }
+            .let { CommonResponse.successOf(it) }
+    }
+
+    @PostMapping(Url.POST_WINNERS)
+    fun winners(@RequestBody winnersRequest: WinnersReq): CommonResponse<WinnersRes> {
+        return tftService.winners(winnersRequest)
+            .let { CommonResponse.successOf(it) }
     }
 }
