@@ -1,5 +1,6 @@
 package com.tft.guide.controller.response
 
+import com.tft.guide.entity.BaseDeck
 import com.tft.guide.entity.WinnerDeck
 
 data class WinnersRes(
@@ -25,7 +26,7 @@ data class WinnersRes(
 
         ) {
         companion object {
-            fun listOf(traits: List<WinnerDeck.Trait>): List<WinnersRes.TraitRes> {
+            fun listOf(traits: List<BaseDeck.Trait>): List<TraitRes> {
                 return traits.map {
                     TraitRes(
                         name = it.name,
@@ -48,7 +49,7 @@ data class WinnersRes(
         val tier: Int?,
     ) {
         companion object {
-            fun listOf(units: List<WinnerDeck.Unit>): List<WinnersRes.Unit> {
+            fun listOf(units: List<BaseDeck.Unit>): List<Unit> {
                 return units.map {
                     Unit(
                         items = it.items ?: emptyList(),

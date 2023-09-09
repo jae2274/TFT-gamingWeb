@@ -1,6 +1,8 @@
 package com.tft.guide.controller
 
 import com.tft.guide.CommonResponse
+import com.tft.guide.controller.request.MatchRequest
+import com.tft.guide.controller.request.MatchesRequest
 import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.controller.response.*
 import com.tft.guide.service.TFTService
@@ -22,6 +24,7 @@ class TFTController(
         const val GET_AUGMENTS: String = "/augments"
         const val GET_STATS: String = "/stats"
         const val POST_WINNERS: String = "/winners"
+        const val POST_MATCHES: String = "/matches"
     }
 
     object QueryParam {
@@ -73,4 +76,10 @@ class TFTController(
         return tftService.winners(winnersRequest)
             .let { CommonResponse.successOf(it) }
     }
+
+//    @PostMapping(Url.POST_MATCHES)
+//    fun saveMatches(@RequestBody matchesReq: MatchesRequest): CommonResponse<SaveMatchesRes> {
+//        return tftService.saveMatches(matchesReq.matches)
+//            .let { CommonResponse.successOf(it) }
+//    }
 }

@@ -1,11 +1,9 @@
 package com.tft.guide.service
 
+import com.tft.guide.controller.request.MatchRequest
 import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.controller.response.*
-import com.tft.guide.entity.Champion
-import com.tft.guide.entity.WinnerDeck
-import com.tft.guide.entity.Item
-import com.tft.guide.entity.Synergy
+import com.tft.guide.entity.*
 import com.tft.guide.repository.*
 //import com.tft.guide.repository.QueryRepository
 import org.springframework.stereotype.Service

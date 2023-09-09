@@ -4,6 +4,7 @@ import com.jyoliar.mongo.and
 import com.jyoliar.mongo.eq
 import com.jyoliar.mongo.greaterEqual
 import com.tft.guide.controller.request.WinnersReq
+import com.tft.guide.entity.BaseDeck
 import com.tft.guide.entity.WinnerDeck
 import org.litote.kmongo.pos
 import org.springframework.data.domain.Sort
@@ -26,7 +27,7 @@ class DeckQueryRepository(
                     buildAugmentsBooleanBuilder(request.augments),
                 )
             )
-                .with(Sort.by(Sort.Direction.DESC, (WinnerDeck::info / WinnerDeck.Info::game_datetime).toDotPath()))
+                .with(Sort.by(Sort.Direction.DESC, (WinnerDeck::info / BaseDeck.Info::game_datetime).toDotPath()))
                 .skip(request.offset)
                 .limit(request.size.toInt()),
             WinnerDeck::class.java
@@ -41,10 +42,10 @@ class DeckQueryRepository(
                     .map { championReq ->
                         WinnerDeck::units.elemMatch(
                             and(
-                                WinnerDeck.Unit::character_id eq championReq.dataId,
-                                WinnerDeck.Unit::tier greaterEqual championReq.tier,
+                                BaseDeck.Unit::character_id eq championReq.dataId,
+                                BaseDeck.Unit::tier greaterEqual championReq.tier,
                                 championReq.itemCount.takeIf { it > 0 }
-                                    ?.let { WinnerDeck.Unit::itemNames.pos(it - 1).exists(true) }
+                                    ?.let { BaseDeck.Unit::itemNames.pos(it - 1).exists(true) }
                                     ?: null
                             )
                         )
@@ -57,7 +58,7 @@ class DeckQueryRepository(
             itemReqs
                 .map { itemReq ->
                     WinnerDeck::units.elemMatch(
-                        WinnerDeck.Unit::itemNames.all(itemReq.dataId)
+                        BaseDeck.Unit::itemNames.all(itemReq.dataId)
                     )
                 }
         )
@@ -70,8 +71,8 @@ class DeckQueryRepository(
                 .map { synergyReq ->
                     WinnerDeck::traits.elemMatch(
                         and(
-                            WinnerDeck.Trait::name eq synergyReq.dataId,
-                            WinnerDeck.Trait::tier_current greaterEqual synergyReq.tier,
+                            BaseDeck.Trait::name eq synergyReq.dataId,
+                            BaseDeck.Trait::tier_current greaterEqual synergyReq.tier,
                         )
                     )
                 }
