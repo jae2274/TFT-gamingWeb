@@ -1,8 +1,29 @@
 package com.tft.guide.controller.request
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+
 
 data class MatchesRequest(
-    val matches: List<MatchRequest>,
+    val matches: List<String>,
+) {
+    companion object {
+        private val objectMapper =
+            jacksonObjectMapper().registerKotlinModule()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    }
+
+    fun toMatchRequests(): List<MatchRequest> {
+        return matches.map {
+            objectMapper.readValue(it)
+        }
+    }
+}
+
+data class MatchBodyReq(
+    val match: MatchRequest,
 )
 
 data class MatchRequest(

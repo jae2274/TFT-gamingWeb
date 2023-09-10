@@ -1,6 +1,7 @@
 package com.tft.guide.controller
 
 import com.tft.guide.CommonResponse
+import com.tft.guide.controller.request.MatchBodyReq
 import com.tft.guide.controller.request.MatchRequest
 import com.tft.guide.controller.request.MatchesRequest
 import com.tft.guide.controller.request.WinnersReq
@@ -77,9 +78,9 @@ class TFTController(
             .let { CommonResponse.successOf(it) }
     }
 
-//    @PostMapping(Url.POST_MATCHES)
-//    fun saveMatches(@RequestBody matchesReq: MatchesRequest): CommonResponse<SaveMatchesRes> {
-//        return tftService.saveMatches(matchesReq.matches)
-//            .let { CommonResponse.successOf(it) }
-//    }
+    @PostMapping(Url.POST_MATCHES)
+    fun saveMatches(@RequestBody matchesReq: MatchBodyReq): CommonResponse<Unit> {
+        return tftService.saveMatch(matchesReq.match)
+            .let { CommonResponse.successOf(it) }
+    }
 }

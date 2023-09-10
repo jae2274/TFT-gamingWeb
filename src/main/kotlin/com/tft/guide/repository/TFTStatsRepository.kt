@@ -2,9 +2,9 @@ package com.tft.guide.repository
 
 import com.tft.guide.entity.TftStats
 import org.springframework.data.mongodb.repository.MongoRepository
-import org.springframework.data.mongodb.repository.Query
 
 interface TFTStatsRepository : MongoRepository<TftStats, String> {
+    fun findByGameVersion(gameVersion: String): TftStats?
     fun findTopByOrderByGameVersionDesc(): TftStats
-    fun findTopBySeasonNumberOrderByCreatedAtDesc(seasonNumber: Int):TftStats
+    fun findTopBySeasonNumberOrderByCreatedAtDesc(seasonNumber: Int): TftStats
 }

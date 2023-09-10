@@ -4,6 +4,9 @@ import com.tft.guide.controller.request.MatchRequest
 import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.controller.response.*
 import com.tft.guide.entity.*
+import com.tft.guide.entity.utils.add
+import com.tft.guide.entity.utils.listOf
+import com.tft.guide.entity.utils.union
 import com.tft.guide.repository.*
 //import com.tft.guide.repository.QueryRepository
 import org.springframework.stereotype.Service
@@ -17,6 +20,9 @@ class TFTService(
     private val itemRepository: ItemRepository,
     private val augmentRepository: AugmentRepository,
     private val tftStatsRepository: TFTStatsRepository,
+    private val deckRepository: DeckRepository,
+    private val winnerDeckRepository: WinnerDeckRepository,
+    private val idSetRepository: IdSetRepository,
 ) {
     fun synergies(season: String): SynergiesRes {
         val synergies: List<Synergy> = synergyRepository.findAllBySeason(season)
@@ -46,5 +52,53 @@ class TFTService(
     fun augments(season: String): AugmentsRes {
         val augments = augmentRepository.findAllBySeason(season)
         return AugmentsRes.of(augments)
+    }
+
+//    fun saveMatches(matches: List<MatchRequest>) {
+//        val decks = matches.map { Deck.listOf(it) }.flatten()
+////        val decks = Deck.listOf(matchDTO)
+//        val idSets = IdSet.listOf(decks)
+//        val tftStatsList = TftStats.listOf(decks)
+//
+//        saveDecks(decks)
+//        saveIdSets(idSets)
+//        saveTftStats(tftStatsList)
+//    }
+
+    fun saveMatch(matches: MatchRequest) {
+        val decks = Deck.listOf(matches)
+        val idSets = IdSet.listOf(decks)
+        val tftStatsList = TftStats.listOf(decks)
+
+        saveDecks(decks)
+        saveIdSets(idSets)
+        saveTftStats(tftStatsList)
+    }
+
+    private fun saveDecks(decks: List<Deck>) {
+        deckRepository.saveAll(decks)
+        decks.filter { it.placement == 1 }
+            .map { WinnerDeck.of(it) }
+            .let { winnerDeckRepository.saveAll(it) }
+    }
+
+    private fun saveIdSets(idSets: Collection<IdSet>) {
+        idSets
+            .map { newIdSet ->
+                idSetRepository.findBySeasonAndType(newIdSet.season, newIdSet.seasonNumber, newIdSet.type)
+                    ?.let { alreadyIdSet -> alreadyIdSet.union(newIdSet) }
+                    ?: newIdSet
+            }
+            .let { idSetRepository.saveAll(it) }
+    }
+
+    private fun saveTftStats(tftStatsList: List<TftStats>) {
+        tftStatsList
+            .map { newTftStats ->
+                tftStatsRepository.findByGameVersion(newTftStats.gameVersion)
+                    ?.also { alreadyTftStats -> alreadyTftStats.add(newTftStats) }
+                    ?: newTftStats
+            }
+            .let { tftStatsRepository.saveAll(it) }
     }
 }
