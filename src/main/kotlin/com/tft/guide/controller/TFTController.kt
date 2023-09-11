@@ -1,10 +1,7 @@
 package com.tft.guide.controller
 
 import com.tft.guide.CommonResponse
-import com.tft.guide.controller.request.MatchBodyReq
-import com.tft.guide.controller.request.MatchRequest
-import com.tft.guide.controller.request.MatchesRequest
-import com.tft.guide.controller.request.WinnersReq
+import com.tft.guide.controller.request.*
 import com.tft.guide.controller.response.*
 import com.tft.guide.service.TFTService
 import org.springframework.web.bind.annotation.GetMapping
@@ -79,8 +76,8 @@ class TFTController(
     }
 
     @PostMapping(Url.POST_MATCHES)
-    fun saveMatches(@RequestBody matchesReq: MatchBodyReq): CommonResponse<Unit> {
-        return tftService.saveMatch(matchesReq.match)
+    fun saveMatches(@RequestBody matchReq: MatchRequest): CommonResponse<Unit> {
+        return tftService.saveMatch(matchReq)
             .let { CommonResponse.successOf(it) }
     }
 }

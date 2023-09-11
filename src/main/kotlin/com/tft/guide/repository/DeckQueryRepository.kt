@@ -5,7 +5,7 @@ import com.jyoliar.mongo.eq
 import com.jyoliar.mongo.greaterEqual
 import com.tft.guide.controller.request.WinnersReq
 import com.tft.guide.entity.BaseDeck
-import com.tft.guide.entity.WinnerDeck
+import com.tft.guide.entity.Deck
 import org.litote.kmongo.pos
 import org.springframework.data.domain.Sort
 import org.springframework.data.mapping.toDotPath
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository
 class DeckQueryRepository(
     val mongoOperations: MongoOperations,
 ) {
-    fun findWinnerDecks(request: WinnersReq): List<WinnerDeck> =
+    fun findWinnerDecks(request: WinnersReq): List<Deck> =
         mongoOperations.find(
             Query.query(
                 and(
@@ -25,12 +25,13 @@ class DeckQueryRepository(
                     buildItemsQuery(request.items),
                     buildSynergiesQuery(request.synergies),
                     buildAugmentsBooleanBuilder(request.augments),
+                    Deck::placement eq 1,
                 )
             )
-                .with(Sort.by(Sort.Direction.DESC, (WinnerDeck::info / BaseDeck.Info::game_datetime).toDotPath()))
+                .with(Sort.by(Sort.Direction.DESC, (Deck::info / BaseDeck.Info::game_datetime).toDotPath()))
                 .skip(request.offset)
                 .limit(request.size.toInt()),
-            WinnerDeck::class.java
+            Deck::class.java
         )
 
 
@@ -40,7 +41,7 @@ class DeckQueryRepository(
             Criteria().andOperator(
                 championReqs
                     .map { championReq ->
-                        WinnerDeck::units.elemMatch(
+                        Deck::units.elemMatch(
                             and(
                                 BaseDeck.Unit::character_id eq championReq.dataId,
                                 BaseDeck.Unit::tier greaterEqual championReq.tier,
@@ -57,7 +58,7 @@ class DeckQueryRepository(
         else Criteria().andOperator(
             itemReqs
                 .map { itemReq ->
-                    WinnerDeck::units.elemMatch(
+                    Deck::units.elemMatch(
                         BaseDeck.Unit::itemNames.all(itemReq.dataId)
                     )
                 }
@@ -69,7 +70,7 @@ class DeckQueryRepository(
         else Criteria().andOperator(
             synergyReqs
                 .map { synergyReq ->
-                    WinnerDeck::traits.elemMatch(
+                    Deck::traits.elemMatch(
                         and(
                             BaseDeck.Trait::name eq synergyReq.dataId,
                             BaseDeck.Trait::tier_current greaterEqual synergyReq.tier,
@@ -81,5 +82,5 @@ class DeckQueryRepository(
 
     private fun buildAugmentsBooleanBuilder(augmentReqs: List<WinnersReq.AugmentReq>): Criteria? =
         if (augmentReqs.isEmpty()) null
-        else WinnerDeck::augments.all(augmentReqs.map { it.dataId })
+        else Deck::augments.all(augmentReqs.map { it.dataId })
 }

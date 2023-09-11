@@ -22,10 +22,6 @@ data class MatchesRequest(
     }
 }
 
-data class MatchBodyReq(
-    val match: MatchRequest,
-)
-
 data class MatchRequest(
     val metadata: MetadataDTO,
     val info: InfoDTO,

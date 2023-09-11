@@ -1,7 +1,7 @@
 package com.tft.guide.controller.response
 
 import com.tft.guide.entity.BaseDeck
-import com.tft.guide.entity.WinnerDeck
+import com.tft.guide.entity.Deck
 
 data class WinnersRes(
     val winners: List<WinnerRes>?,
@@ -65,7 +65,7 @@ data class WinnersRes(
     }
 
     companion object {
-        fun of(winnerDecks: List<WinnerDeck>): WinnersRes {
+        fun of(winnerDecks: List<Deck>): WinnersRes {
             return WinnersRes(
                 winnerDecks
                     .map {

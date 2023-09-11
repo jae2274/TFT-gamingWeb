@@ -2,6 +2,7 @@ package com.tft.guide.service
 
 import com.tft.guide.controller.request.MatchRequest
 import com.tft.guide.controller.request.WinnersReq
+import com.tft.guide.controller.response.WinnersRes
 import com.tft.guide.controller.response.*
 import com.tft.guide.entity.*
 import com.tft.guide.entity.utils.add
@@ -21,7 +22,6 @@ class TFTService(
     private val augmentRepository: AugmentRepository,
     private val tftStatsRepository: TFTStatsRepository,
     private val deckRepository: DeckRepository,
-    private val winnerDeckRepository: WinnerDeckRepository,
     private val idSetRepository: IdSetRepository,
 ) {
     fun synergies(season: String): SynergiesRes {
@@ -35,7 +35,7 @@ class TFTService(
     }
 
     fun winners(winnersRequest: WinnersReq): WinnersRes {
-        val winnerDecks: List<WinnerDeck> = deckQueryRepository.findWinnerDecks(winnersRequest)
+        val winnerDecks: List<Deck> = deckQueryRepository.findWinnerDecks(winnersRequest)
         return WinnersRes.of(winnerDecks)
     }
 
@@ -70,16 +70,9 @@ class TFTService(
         val idSets = IdSet.listOf(decks)
         val tftStatsList = TftStats.listOf(decks)
 
-        saveDecks(decks)
+        deckRepository.saveAll(decks)
         saveIdSets(idSets)
         saveTftStats(tftStatsList)
-    }
-
-    private fun saveDecks(decks: List<Deck>) {
-        deckRepository.saveAll(decks)
-        decks.filter { it.placement == 1 }
-            .map { WinnerDeck.of(it) }
-            .let { winnerDeckRepository.saveAll(it) }
     }
 
     private fun saveIdSets(idSets: Collection<IdSet>) {
