@@ -76,8 +76,8 @@ class TFTController(
     }
 
     @PostMapping(Url.POST_MATCHES)
-    fun saveMatches(@RequestBody matchReq: MatchRequest): CommonResponse<Unit> {
-        return tftService.saveMatch(matchReq)
+    fun saveMatches(@RequestBody matchReq: List<MatchRequest>): CommonResponse<Unit> {
+        return tftService.saveMatches(matchReq)
             .let { CommonResponse.successOf(it) }
     }
 }

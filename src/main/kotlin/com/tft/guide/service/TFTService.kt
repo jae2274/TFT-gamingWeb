@@ -65,8 +65,10 @@ class TFTService(
 //        saveTftStats(tftStatsList)
 //    }
 
-    fun saveMatch(matches: MatchRequest) {
-        val decks = Deck.listOf(matches)
+    fun saveMatches(matches: List<MatchRequest>) {
+        val filteredMatches = matches.filter { !deckRepository.existsByMatchId(it.metadata.match_id) }
+
+        val decks = filteredMatches.map { Deck.listOf(it) }.flatten()
         val idSets = IdSet.listOf(decks)
         val tftStatsList = TftStats.listOf(decks)
 
