@@ -1,0 +1,82 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "ReceiveMessage",
+  "States": {
+    "ReceiveMessage": {
+      "Type": "Task",
+      "Parameters": {
+        "QueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/986069063944/TFT-MatchInfoSQS",
+        "MaxNumberOfMessages": 10
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sqs:receiveMessage",
+      "Next": "FinishifSQSEmpty"
+    },
+    "FinishifSQSEmpty": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Not": {
+            "Variable": "$.Messages",
+            "IsPresent": true
+          },
+          "Next": "Success"
+        }
+      ],
+      "Default": "convertBody"
+    },
+    "convertBody": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "ConvertStringToJson",
+        "States": {
+          "ConvertStringToJson": {
+            "Type": "Pass",
+            "End": true,
+            "Parameters": {
+              "messageInfo": {
+                "Id.$": "$.MessageId",
+                "ReceiptHandle.$": "$.ReceiptHandle"
+              },
+              "Body.$": "States.StringToJson($.Body)"
+            }
+          }
+        }
+      },
+      "Next": "SaveMatchInfo",
+      "ItemsPath": "$.Messages"
+    },
+    "SaveMatchInfo": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::apigateway:invoke",
+      "Parameters": {
+        "ApiEndpoint": "8ilmrywn6h.execute-api.ap-northeast-2.amazonaws.com",
+        "Headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "Method": "POST",
+        "Stage": "prod",
+        "Path": "/matches",
+        "RequestBody.$": "$[*].Body"
+      },
+      "Next": "DeleteMessageBatch",
+      "ResultPath": null
+    },
+    "Success": {
+      "Type": "Succeed"
+    },
+    "DeleteMessageBatch": {
+      "Type": "Task",
+      "Parameters": {
+        "Entries.$": "$[*].messageInfo",
+        "QueueUrl": "https://sqs.ap-northeast-2.amazonaws.com/986069063944/TFT-MatchInfoSQS"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:sqs:deleteMessageBatch",
+      "Next": "ReceiveMessage"
+    }
+  }
+}
