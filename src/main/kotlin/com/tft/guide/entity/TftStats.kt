@@ -2,14 +2,18 @@ package com.tft.guide.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
+import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 
-@Document(collection = "tftStats")
+@Document(collection = TftStats.COLLECTION_NAME)
+@CompoundIndex(
+    def = "{'${TftStats.GAME_VERSION_FIELD}': 1, '${TftStats.SEASON_FIELD}': 1, '${TftStats.SEASON_NUMBER_FIELD}': 1}",
+    unique = true
+)
 data class TftStats(
-    @Indexed(unique = true)
     val gameVersion: String,
     val season: String,
     val seasonNumber: Int,
@@ -21,6 +25,13 @@ data class TftStats(
     var _id: String? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
+    companion object {
+        const val COLLECTION_NAME = "tftStats"
+        const val GAME_VERSION_FIELD = "gameVersion"
+        const val SEASON_FIELD = "season"
+        const val SEASON_NUMBER_FIELD = "seasonNumber"
+    }
+
     data class ChampionStats(
         override var totalPlacement: Long = 0,
         override var totalCount: Long = 0,
@@ -68,9 +79,6 @@ data class TftStats(
     ) {
         companion object
     }
-
-
-    companion object
 }
 
 open class BaseStats(

@@ -12,6 +12,7 @@ import org.springframework.data.mapping.toDotPath
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.*
 import org.springframework.stereotype.Repository
+import org.litote.kmongo.div
 
 @Repository
 class DeckQueryRepository(
@@ -21,6 +22,7 @@ class DeckQueryRepository(
         mongoOperations.find(
             Query.query(
                 and(
+                    (Deck::info / BaseDeck.Info::tft_set_core_name) eq request.season,
                     buildChampionsQuery(request.champions),
                     buildItemsQuery(request.items),
                     buildSynergiesQuery(request.synergies),

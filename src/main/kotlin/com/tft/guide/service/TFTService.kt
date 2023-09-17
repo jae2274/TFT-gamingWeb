@@ -45,7 +45,7 @@ class TFTService(
     }
 
     fun stats(season: String): TftStatsRes {
-        val tftStats = tftStatsRepository.findTopBySeasonNumberOrderByCreatedAtDesc(season.toInt())
+        val tftStats = tftStatsRepository.findTopBySeasonOrderByCreatedAtDesc(season)
         return TftStatsRes.of(tftStats)
     }
 
@@ -66,7 +66,8 @@ class TFTService(
 //    }
 
     fun saveMatches(matches: List<MatchRequest>) {
-        val filteredMatches = matches.filter { !deckRepository.existsByMatchId(it.metadata.match_id) }
+        val filteredMatches =
+            matches.distinctBy { it.metadata.match_id }.filter { !deckRepository.existsByMatchId(it.metadata.match_id) }
 
         val decks = filteredMatches.map { Deck.listOf(it) }.flatten()
         val idSets = IdSet.listOf(decks)
@@ -90,7 +91,11 @@ class TFTService(
     private fun saveTftStats(tftStatsList: List<TftStats>) {
         tftStatsList
             .map { newTftStats ->
-                tftStatsRepository.findByGameVersion(newTftStats.gameVersion)
+                tftStatsRepository.findBySeasonAndSeasonNumberAndGameVersion(
+                    newTftStats.season,
+                    newTftStats.seasonNumber,
+                    newTftStats.gameVersion
+                )
                     ?.also { alreadyTftStats -> alreadyTftStats.add(newTftStats) }
                     ?: newTftStats
             }
